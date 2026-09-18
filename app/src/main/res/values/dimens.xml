@@ -6,7 +6,6 @@
     <dimen name="button_layout_margin">@dimen/medium_margin</dimen>
 
     <dimen name="button_text_size">26sp</dimen>
-    <dimen name="formula_text_size">22sp</dimen>
     <dimen name="display_text_size">36sp</dimen>
 
     <dimen name="unit_type_size">120dp</dimen>
