@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Fossify Calculator</string>
+    <string name="app_name">RPN Calculator</string>
     <string name="package_name">com.jakub.rpncalculator</string>
 
     <string name="unit_name_with_symbol_format">%s (%s)</string>
