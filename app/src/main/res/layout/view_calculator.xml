@@ -272,8 +272,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="ENTER"
-            android:textSize="18sp" />
+            android:text="↵" />
 
     </LinearLayout>
 </LinearLayout>
