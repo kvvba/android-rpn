@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import me.grantland.widget.AutofitHelper
 import org.fossify.commons.extensions.appLaunched
@@ -272,7 +273,28 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     override fun showNewFormula(value: String, context: Context) {
-        binding.formula?.text = value
+        binding.formula?.let { it.text = truncateStackToFit(it, value) }
+    }
+
+    /**
+     * Keeps only the last lines of [text] that fit within [view]'s measured height at its
+     * current (fixed) text size, dropping the oldest/topmost stack entries first — the ones
+     * closest to X are the most relevant and should never be pushed out by older ones.
+     */
+    private fun truncateStackToFit(view: TextView, text: String): String {
+        val lineHeight = view.lineHeight
+        val availableHeight = view.height - view.paddingTop - view.paddingBottom
+        if (text.isEmpty() || lineHeight <= 0 || availableHeight <= 0) {
+            return text
+        }
+
+        val lines = text.split("\n")
+        val maxLines = (availableHeight / lineHeight).coerceAtLeast(1)
+        return if (lines.size > maxLines) {
+            lines.takeLast(maxLines).joinToString("\n")
+        } else {
+            text
+        }
     }
 
     private fun setupDecimalButton() {
