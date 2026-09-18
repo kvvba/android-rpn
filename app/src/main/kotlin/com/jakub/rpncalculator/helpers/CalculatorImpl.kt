@@ -98,10 +98,13 @@ class CalculatorImpl(
     }
 
     fun handleSwap() {
-        ensureEntryPushed()
-        if (!engine.swapTop()) {
-            context.toast(R.string.error_stack_needs_two_values)
+        val pendingCount = if (entryActive) 1 else 0
+        if (engine.size + pendingCount < 2) {
+            return
         }
+
+        ensureEntryPushed()
+        engine.swapTop()
         refreshDisplay()
     }
 
@@ -147,6 +150,12 @@ class CalculatorImpl(
     }
 
     fun handleOperation(operation: String) {
+        val pendingCount = if (entryActive) 1 else 0
+        val requiredCount = if (isUnary(operation)) 1 else 2
+        if (engine.size + pendingCount < requiredCount) {
+            return
+        }
+
         ensureEntryPushed()
 
         if (isUnary(operation)) {
@@ -217,7 +226,7 @@ class CalculatorImpl(
             }
 
             is OpOutcome.Error -> when (outcome.error) {
-                RpnError.INSUFFICIENT_STACK -> context.toast(R.string.error_stack_needs_two_values)
+                RpnError.INSUFFICIENT_STACK -> {}
                 RpnError.INVALID_OPERATION -> {
                     val messageRes = if (operation == DIVIDE) {
                         R.string.formula_divide_by_zero_error
