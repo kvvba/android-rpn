@@ -5,7 +5,7 @@
     android:id="@+id/main_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.fossify.math.activities.MainActivity"
+    tools:context="com.jakub.rpncalculator.activities.MainActivity"
     tools:ignore="HardcodedText">
 
     <org.fossify.commons.views.MyAppBarLayout
@@ -43,10 +43,9 @@
                 android:id="@+id/formula"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="2.1"
+                android:layout_weight="1.6"
                 android:fontFamily="sans-serif-light"
                 android:gravity="end|bottom"
-                android:maxLines="1"
                 android:paddingLeft="@dimen/activity_margin"
                 android:paddingRight="@dimen/activity_margin"
                 android:textSize="@dimen/formula_text_size" />
@@ -55,7 +54,7 @@
                 android:id="@+id/result"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.8"
+                android:layout_weight="1.4"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center_vertical|end"
                 android:maxLines="1"
@@ -103,21 +102,21 @@
                     android:text="÷" />
 
                 <TextView
-                    android:id="@+id/btn_clear"
+                    android:id="@+id/btn_power"
                     style="@style/MyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="C" />
+                    android:text="^" />
 
                 <TextView
-                    android:id="@+id/btn_reset"
+                    android:id="@+id/btn_swap"
                     style="@style/MyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="AC"
-                    android:visibility="gone" />
+                    android:text="x⇄y"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -167,6 +166,15 @@
                     android:layout_weight="1"
                     android:text="√" />
 
+                <TextView
+                    android:id="@+id/btn_drop"
+                    style="@style/MyButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="drop"
+                    android:textSize="16sp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -208,12 +216,20 @@
                     android:text="-" />
 
                 <TextView
-                    android:id="@+id/btn_power"
+                    android:id="@+id/btn_percent"
                     style="@style/MyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="^" />
+                    android:text="%" />
+
+                <TextView
+                    android:id="@+id/btn_chs"
+                    style="@style/MyButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="+/-" />
 
             </LinearLayout>
 
@@ -240,12 +256,13 @@
                     android:text="." />
 
                 <TextView
-                    android:id="@+id/btn_equals"
+                    android:id="@+id/btn_enter"
                     style="@style/MyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="=" />
+                    android:text="ENTER"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/btn_plus"
@@ -256,12 +273,20 @@
                     android:text="+" />
 
                 <TextView
-                    android:id="@+id/btn_percent"
+                    android:id="@+id/btn_ac"
                     style="@style/MyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="%" />
+                    android:text="AC" />
+
+                <TextView
+                    android:id="@+id/btn_backspace"
+                    style="@style/MyButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="⌫" />
 
             </LinearLayout>
         </LinearLayout>

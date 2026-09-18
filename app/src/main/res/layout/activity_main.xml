@@ -5,7 +5,7 @@
     android:id="@+id/main_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.fossify.math.activities.MainActivity"
+    tools:context="com.jakub.rpncalculator.activities.MainActivity"
     tools:ignore="HardcodedText">
 
     <org.fossify.commons.views.MyAppBarLayout

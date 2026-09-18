@@ -1,1 +1,0 @@
-Egyszerű és nyílt forráskódú számológép a gyors és egyszerű számításokhoz

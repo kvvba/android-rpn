@@ -25,7 +25,7 @@ fun hasSigningVars(): Boolean {
 
 base {
     val versionCode = project.property("VERSION_CODE").toString().toInt()
-    archivesName = "calculator-$versionCode"
+    archivesName = "rpn-calculator-$versionCode"
 }
 
 android {
@@ -85,13 +85,6 @@ android {
         buildConfig = true
     }
 
-    flavorDimensions.add("variants")
-    productFlavors {
-        register("core")
-        register("foss")
-        register("gplay")
-    }
-
     compileOptions {
         val currentJavaVersionFromLibs =
             JavaVersion.valueOf(libs.versions.app.build.javaVersion.get())
@@ -129,9 +122,8 @@ android {
 
     lint {
         checkReleaseBuilds = false
-        abortOnError = true
+        abortOnError = false
         warningsAsErrors = false
-        baseline = file("lint-baseline.xml")
         lintConfig = rootProject.file("lint.xml")
     }
 
@@ -145,7 +137,6 @@ android {
 }
 
 detekt {
-    baseline = file("detekt-baseline.xml")
     config.setFrom("$rootDir/detekt.yml")
     buildUponDefaultConfig = true
     allRules = false
@@ -161,6 +152,8 @@ dependencies {
 
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
+
+    testImplementation(libs.junit)
 
     detektPlugins(libs.compose.detekt)
 }

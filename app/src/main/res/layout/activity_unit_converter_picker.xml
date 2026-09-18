@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="org.fossify.math.activities.UnitConverterActivity"
+    tools:context="com.jakub.rpncalculator.activities.UnitConverterActivity"
     tools:ignore="HardcodedText">
 
     <org.fossify.commons.views.MyAppBarLayout

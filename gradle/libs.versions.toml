@@ -18,6 +18,8 @@ composeMaterial3 = "1.4.0"
 autofittextview = "0.2.1"
 #EvalEx
 evalex = "3.7.0"
+#Testing
+junit = "4.13.2"
 #Room
 room = "2.8.4"
 #Fossify
@@ -61,6 +63,8 @@ auto-fit-text-view = { module = "me.grantland:autofittextview", version.ref = "a
 fossify-commons = { module = "org.fossify:commons", version.ref = "commons" }
 #EvalEx
 evalex = { module = "com.ezylang:EvalEx", version.ref = "evalex" }
+#Testing
+junit = { module = "junit:junit", version.ref = "junit" }
 [bundles]
 compose = [
     "compose-activity",
