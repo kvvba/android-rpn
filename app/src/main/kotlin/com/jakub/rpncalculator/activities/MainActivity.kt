@@ -77,6 +77,8 @@ class MainActivity : SimpleActivity(), Calculator {
         binding.btnPower?.setOnClickOperation(POWER)
         binding.btnRoot?.setOnClickOperation(ROOT)
         binding.btnEnter?.setVibratingOnClickListener { calc.handleEnter() }
+        binding.btnRollUp?.setVibratingOnClickListener { calc.handleRollUp() }
+        binding.btnRollDown?.setVibratingOnClickListener { calc.handleRollDown() }
         binding.btnSwap?.setVibratingOnClickListener { calc.handleSwap() }
         binding.btnDrop?.setVibratingOnClickListener { calc.handleDrop() }
         binding.btnChs?.setVibratingOnClickListener { calc.handleChs() }
@@ -116,7 +118,8 @@ class MainActivity : SimpleActivity(), Calculator {
         binding.apply {
             arrayOf(
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace, btnAc,
-                btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal
+                btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal,
+                btnRollUp, btnRollDown
             ).forEach {
                 it?.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme

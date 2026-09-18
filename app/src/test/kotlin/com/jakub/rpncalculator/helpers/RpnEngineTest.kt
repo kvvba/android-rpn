@@ -134,6 +134,55 @@ class RpnEngineTest {
     }
 
     @Test
+    fun `rollDown moves X to the bottom and shifts the rest up`() {
+        engine.push(BigDecimal(1))
+        engine.push(BigDecimal(2))
+        engine.push(BigDecimal(3))
+
+        assertTrue(engine.rollDown())
+
+        assertEquals(BigDecimal(2), engine.peek())
+        assertEquals(listOf(BigDecimal(3), BigDecimal(1), BigDecimal(2)), engine.snapshot())
+    }
+
+    @Test
+    fun `rollUp moves the bottom value to X and shifts the rest down`() {
+        engine.push(BigDecimal(1))
+        engine.push(BigDecimal(2))
+        engine.push(BigDecimal(3))
+
+        assertTrue(engine.rollUp())
+
+        assertEquals(BigDecimal(1), engine.peek())
+        assertEquals(listOf(BigDecimal(2), BigDecimal(3), BigDecimal(1)), engine.snapshot())
+    }
+
+    @Test
+    fun `rollUp and rollDown undo each other`() {
+        engine.push(BigDecimal(1))
+        engine.push(BigDecimal(2))
+        engine.push(BigDecimal(3))
+        val original = engine.snapshot()
+
+        engine.rollDown()
+        engine.rollUp()
+
+        assertEquals(original, engine.snapshot())
+    }
+
+    @Test
+    fun `rollUp with fewer than two values fails`() {
+        engine.push(BigDecimal(1))
+        assertFalse(engine.rollUp())
+    }
+
+    @Test
+    fun `rollDown with fewer than two values fails`() {
+        engine.push(BigDecimal(1))
+        assertFalse(engine.rollDown())
+    }
+
+    @Test
     fun `dropTop removes and returns the top value`() {
         engine.push(BigDecimal(1))
         engine.push(BigDecimal(2))

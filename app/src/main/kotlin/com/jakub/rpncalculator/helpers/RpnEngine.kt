@@ -44,6 +44,24 @@ class RpnEngine {
         return true
     }
 
+    /** Rotates the whole stack so the bottom-most value becomes the new X. */
+    fun rollUp(): Boolean {
+        if (stack.size < 2) {
+            return false
+        }
+        stack.addLast(stack.removeFirst())
+        return true
+    }
+
+    /** Rotates the whole stack so X becomes the new bottom-most value. */
+    fun rollDown(): Boolean {
+        if (stack.size < 2) {
+            return false
+        }
+        stack.addFirst(stack.removeLast())
+        return true
+    }
+
     fun clear() {
         stack.clear()
     }

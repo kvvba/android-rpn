@@ -108,6 +108,28 @@ class CalculatorImpl(
         refreshDisplay()
     }
 
+    fun handleRollUp() {
+        val pendingCount = if (entryActive) 1 else 0
+        if (engine.size + pendingCount < 2) {
+            return
+        }
+
+        ensureEntryPushed()
+        engine.rollUp()
+        refreshDisplay()
+    }
+
+    fun handleRollDown() {
+        val pendingCount = if (entryActive) 1 else 0
+        if (engine.size + pendingCount < 2) {
+            return
+        }
+
+        ensureEntryPushed()
+        engine.rollDown()
+        refreshDisplay()
+    }
+
     fun handleDrop() {
         if (entryActive) {
             entry = "0"
