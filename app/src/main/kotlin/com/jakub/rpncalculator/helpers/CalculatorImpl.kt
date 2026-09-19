@@ -9,6 +9,14 @@ import org.json.JSONObject
 import org.json.JSONTokener
 import java.math.BigDecimal
 
+private const val MAX_UNDO_HISTORY = 100
+
+private data class CalculatorSnapshot(
+    val stack: List<BigDecimal>,
+    val entry: String,
+    val entryActive: Boolean
+)
+
 /**
  * Android-facing wrapper around [RpnEngine]: owns the text entry buffer, number formatting,
  * history recording and instance-state persistence. All arithmetic is delegated to [RpnEngine].
@@ -23,6 +31,7 @@ class CalculatorImpl(
     private var entry = "0"
     private var entryActive = false
     private val formatter = NumberFormatHelper()
+    private val undoHistory = ArrayDeque<CalculatorSnapshot>()
 
     private val decimalSeparator: String get() = formatter.decimalSeparator
     private val groupingSeparator: String get() = formatter.groupingSeparator
@@ -50,7 +59,24 @@ class CalculatorImpl(
         }
     }
 
+    private fun pushHistory() {
+        undoHistory.addLast(CalculatorSnapshot(engine.snapshot(), entry, entryActive))
+        if (undoHistory.size > MAX_UNDO_HISTORY) {
+            undoHistory.removeFirst()
+        }
+    }
+
+    fun handleUndo() {
+        val previous = undoHistory.removeLastOrNull() ?: return
+        engine.clear()
+        previous.stack.forEach { engine.push(it) }
+        entry = previous.entry
+        entryActive = previous.entryActive
+        refreshDisplay()
+    }
+
     private fun addDigit(digit: String) {
+        pushHistory()
         if (!entryActive) {
             entry = ""
             entryActive = true
@@ -66,6 +92,7 @@ class CalculatorImpl(
     }
 
     private fun decimalClicked() {
+        pushHistory()
         if (!entryActive) {
             entry = "0"
             entryActive = true
@@ -78,6 +105,7 @@ class CalculatorImpl(
     }
 
     fun handleEnter() {
+        pushHistory()
         if (entryActive) {
             pushEntry()
         } else {
@@ -103,6 +131,7 @@ class CalculatorImpl(
             return
         }
 
+        pushHistory()
         ensureEntryPushed()
         engine.swapTop()
         refreshDisplay()
@@ -114,6 +143,7 @@ class CalculatorImpl(
             return
         }
 
+        pushHistory()
         ensureEntryPushed()
         engine.rollUp()
         refreshDisplay()
@@ -125,12 +155,14 @@ class CalculatorImpl(
             return
         }
 
+        pushHistory()
         ensureEntryPushed()
         engine.rollDown()
         refreshDisplay()
     }
 
     fun handleDrop() {
+        pushHistory()
         if (entryActive) {
             entry = "0"
             entryActive = false
@@ -141,6 +173,7 @@ class CalculatorImpl(
     }
 
     fun handleChs() {
+        pushHistory()
         if (entryActive) {
             entry = if (entry.startsWith("-")) entry.substring(1) else "-$entry"
         } else {
@@ -154,6 +187,7 @@ class CalculatorImpl(
             return
         }
 
+        pushHistory()
         val newEntry = entry.dropLast(1).trimEnd(groupingSeparator.single())
         if (newEntry.isEmpty() || newEntry == "-") {
             entry = "0"
@@ -165,6 +199,7 @@ class CalculatorImpl(
     }
 
     fun handleReset() {
+        pushHistory()
         engine.clear()
         entry = "0"
         entryActive = false
@@ -178,6 +213,7 @@ class CalculatorImpl(
             return
         }
 
+        pushHistory()
         ensureEntryPushed()
 
         if (isUnary(operation)) {
