@@ -1,6 +1,7 @@
 package com.jakub.rpncalculator.activities
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -19,9 +20,10 @@ import com.jakub.rpncalculator.databinding.ItemFormulaVariableBinding
 import com.jakub.rpncalculator.extensions.config
 import com.jakub.rpncalculator.helpers.NumberFormatHelper
 import com.jakub.rpncalculator.helpers.formulas.Formula
-import com.jakub.rpncalculator.helpers.formulas.FormulaSection
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 class FormulaActivity : SimpleActivity() {
     companion object {
@@ -31,6 +33,7 @@ class FormulaActivity : SimpleActivity() {
 
     private val binding by viewBinding(ActivityFormulaBinding::inflate)
     private lateinit var formula: Formula
+    private lateinit var variablesBySymbol: Map<String, com.jakub.rpncalculator.helpers.formulas.FormulaVariable>
     private val inputsBySymbol = LinkedHashMap<String, EditText>()
     private val formatter = NumberFormatHelper()
 
@@ -46,6 +49,7 @@ class FormulaActivity : SimpleActivity() {
             return
         }
         formula = selected
+        variablesBySymbol = formula.variables.associateBy { it.symbol }
 
         binding.formulaToolbar.title = getString(formula.nameResId)
         if (formula.showExpression) {
@@ -86,6 +90,9 @@ class FormulaActivity : SimpleActivity() {
             val symbolSuffix = if (formula.showExpression) " (${variable.symbol})" else ""
             row.formulaVariableLabel.text = "${getString(variable.nameResId)}$symbolSuffix$unitSuffix"
             row.formulaVariableInput.setText(prefs.getString(prefsKey(variable.symbol), ""))
+            if (variable.isCurrency) {
+                row.formulaVariableInput.filters = arrayOf(twoDecimalInputFilter)
+            }
             row.formulaVariableInput.setOnLongClickListener {
                 copyToClipboard(row.formulaVariableInput.text.toString())
                 true
@@ -189,22 +196,14 @@ class FormulaActivity : SimpleActivity() {
 
         try {
             val modeIndex = if (formula.modeOptions.isNotEmpty()) binding.formulaModeSpinner.selectedItemPosition else 0
-            var result = formula.solve(known, blankSymbol, modeIndex)
-            if (formula.section == FormulaSection.FINANCE) {
-                result = result.setScale(2, RoundingMode.HALF_UP)
-            }
-            inputsBySymbol.getValue(blankSymbol).setText(formatter.bigDecimalToString(result))
+            val result = formula.solve(known, blankSymbol, modeIndex)
+            inputsBySymbol.getValue(blankSymbol).setText(formatValue(blankSymbol, result))
             known[blankSymbol] = result
 
             binding.formulaDerivedOutputsContainer.removeAllViews()
             for ((labelResId, value) in formula.derivedOutputs(known, modeIndex)) {
-                val displayValue = if (formula.section == FormulaSection.FINANCE) {
-                    value.setScale(2, RoundingMode.HALF_UP)
-                } else {
-                    value
-                }
                 val row = TextView(this)
-                row.text = "${getString(labelResId)}: ${formatter.bigDecimalToString(displayValue)}"
+                row.text = "${getString(labelResId)}: ${formatCurrency(value)}"
                 row.setTextColor(getProperTextColor())
                 binding.formulaDerivedOutputsContainer.addView(row)
             }
@@ -213,6 +212,28 @@ class FormulaActivity : SimpleActivity() {
         } catch (e: ArithmeticException) {
             toast(e.message.orEmpty())
         }
+    }
+
+    /** [isCurrency] variables always display 2 decimals (e.g. "5.00"); everything else uses the
+     * calculator's normal trailing-zero-stripping format. */
+    private fun formatValue(symbol: String, value: BigDecimal): String =
+        if (variablesBySymbol[symbol]?.isCurrency == true) {
+            formatCurrency(value)
+        } else {
+            formatter.bigDecimalToString(value)
+        }
+
+    private fun formatCurrency(value: BigDecimal): String {
+        val rounded = value.setScale(2, RoundingMode.HALF_UP)
+        val df = DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance())
+        return df.format(rounded)
+    }
+
+    /** Blocks typing a 3rd digit after the decimal point in a currency field. */
+    private val twoDecimalInputFilter = InputFilter { source, start, end, dest, dstart, dend ->
+        val result = dest.toString().substring(0, dstart) + source.subSequence(start, end) + dest.toString().substring(dend)
+        val decimalIndex = result.indexOf(formatter.decimalSeparator)
+        if (decimalIndex != -1 && result.length - decimalIndex - formatter.decimalSeparator.length > 2) "" else null
     }
 
     private fun calculateFromSingleField() {
@@ -235,11 +256,7 @@ class FormulaActivity : SimpleActivity() {
                 if (otherSymbol == symbol) {
                     continue
                 }
-                var result = results.getValue(otherSymbol)
-                if (formula.section == FormulaSection.FINANCE) {
-                    result = result.setScale(2, RoundingMode.HALF_UP)
-                }
-                otherInput.setText(formatter.bigDecimalToString(result))
+                otherInput.setText(formatValue(otherSymbol, results.getValue(otherSymbol)))
             }
         } catch (e: IllegalArgumentException) {
             toast(e.message.orEmpty())

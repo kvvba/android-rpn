@@ -22,10 +22,10 @@ object CountryIncomeTaxFormula : Formula {
     override val solveFromSingleField: Boolean = true
 
     override val variables: List<FormulaVariable> = listOf(
-        FormulaVariable("Income", R.string.formula_var_income),
-        FormulaVariable("TakeHomeYear", R.string.formula_take_home_year),
-        FormulaVariable("TakeHomeMonth", R.string.formula_take_home_month),
-        FormulaVariable("Tax", R.string.formula_var_tax)
+        FormulaVariable("Income", R.string.formula_var_income, isCurrency = true),
+        FormulaVariable("TakeHomeYear", R.string.formula_take_home_year, isCurrency = true),
+        FormulaVariable("TakeHomeMonth", R.string.formula_take_home_month, isCurrency = true),
+        FormulaVariable("Tax", R.string.formula_var_tax, isCurrency = true)
     )
 
     override val modeOptions: List<Int> = listOf(

@@ -21,8 +21,8 @@ object CompoundInterestFormula : Formula {
     override val expressionResId: Int = R.string.formula_compound_interest_expression
 
     override val variables: List<FormulaVariable> = listOf(
-        FormulaVariable("A", R.string.formula_var_final_amount),
-        FormulaVariable("P", R.string.formula_var_principal),
+        FormulaVariable("A", R.string.formula_var_final_amount, isCurrency = true),
+        FormulaVariable("P", R.string.formula_var_principal, isCurrency = true),
         FormulaVariable("r", R.string.formula_var_annual_rate, R.string.formula_unit_decimal_rate),
         FormulaVariable("n", R.string.formula_var_compounds_per_year),
         FormulaVariable("t", R.string.formula_var_years)

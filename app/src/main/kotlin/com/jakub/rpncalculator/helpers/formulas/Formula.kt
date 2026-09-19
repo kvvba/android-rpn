@@ -3,8 +3,16 @@ package com.jakub.rpncalculator.helpers.formulas
 import com.jakub.rpncalculator.R
 import java.math.BigDecimal
 
-/** One fillable variable in a [Formula]: its symbol, display name, and optional unit hint. */
-data class FormulaVariable(val symbol: String, val nameResId: Int, val unitResId: Int? = null)
+/**
+ * One fillable variable in a [Formula]: its symbol, display name, and optional unit hint.
+ * [isCurrency] forces a computed value into fixed 2-decimal display (e.g. "5.00", not "5").
+ */
+data class FormulaVariable(
+    val symbol: String,
+    val nameResId: Int,
+    val unitResId: Int? = null,
+    val isCurrency: Boolean = false
+)
 
 enum class FormulaSection(val nameResId: Int) {
     UTILITY(R.string.formula_section_utility),

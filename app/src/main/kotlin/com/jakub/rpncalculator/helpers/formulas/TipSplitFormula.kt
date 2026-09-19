@@ -16,10 +16,10 @@ object TipSplitFormula : Formula {
     private val HUNDRED = BigDecimal(100)
 
     override val variables: List<FormulaVariable> = listOf(
-        FormulaVariable("Bill", R.string.formula_var_bill),
+        FormulaVariable("Bill", R.string.formula_var_bill, isCurrency = true),
         FormulaVariable("Tip", R.string.formula_var_tip, R.string.formula_unit_percent),
         FormulaVariable("People", R.string.formula_var_people),
-        FormulaVariable("PerPerson", R.string.formula_var_per_person)
+        FormulaVariable("PerPerson", R.string.formula_var_per_person, isCurrency = true)
     )
 
     override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal {
