@@ -146,13 +146,8 @@
     <string name="unit_energy_foot_pound">Foot-pound</string>
     <string name="unit_energy_erg">Erg</string>
 
-    <!-- FAQ -->
-    <string name="faq_1_title">What is RPN and how do I use it?</string>
-    <string name="faq_1_text">Reverse Polish Notation avoids the need for an equals key or parentheses. Enter a number and tap Enter to push it onto the stack, then enter another number and tap an operator to combine the top two stack values. For example, to calculate 3 + 4, tap 3, Enter, 4, +.</string>
-    <string name="faq_2_title">How do the stack buttons work?</string>
-    <string name="faq_2_text">Swap (x⇄y) exchanges the two topmost stack values. Drop discards the number you\'re typing, or removes the topmost stack value if nothing is being typed. Backspace removes the last digit you typed and has no effect otherwise. AC clears the whole stack.</string>
-    <string name="faq_3_title">Is this based on another app?</string>
-    <string name="faq_3_text">This app is a fork of Fossify Calculator (https://github.com/FossifyOrg/Calculator), adapted to use Reverse Polish Notation.</string>
+    <!-- About -->
+    <string name="about_fork_notice">This app is a fork of Fossify Calculator (https://github.com/FossifyOrg/Calculator), adapted to use Reverse Polish Notation.</string>
     <!--
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
