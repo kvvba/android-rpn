@@ -29,24 +29,35 @@ import com.jakub.rpncalculator.databinding.ActivityMainBinding
 import com.jakub.rpncalculator.dialogs.HistoryDialog
 import com.jakub.rpncalculator.extensions.config
 import com.jakub.rpncalculator.extensions.updateViewColors
+import com.jakub.rpncalculator.helpers.ACOS
+import com.jakub.rpncalculator.helpers.ACOSH
+import com.jakub.rpncalculator.helpers.ASIN
+import com.jakub.rpncalculator.helpers.ASINH
+import com.jakub.rpncalculator.helpers.ATAN
+import com.jakub.rpncalculator.helpers.ATANH
 import com.jakub.rpncalculator.helpers.CALCULATOR_STATE
 import com.jakub.rpncalculator.helpers.Calculator
 import com.jakub.rpncalculator.helpers.CalculatorImpl
 import com.jakub.rpncalculator.helpers.COS
+import com.jakub.rpncalculator.helpers.COSH
 import com.jakub.rpncalculator.helpers.DIVIDE
 import com.jakub.rpncalculator.helpers.HistoryHelper
 import com.jakub.rpncalculator.helpers.LN
 import com.jakub.rpncalculator.helpers.LOG
 import com.jakub.rpncalculator.helpers.MINUS
 import com.jakub.rpncalculator.helpers.MULTIPLY
+import com.jakub.rpncalculator.helpers.NCR
+import com.jakub.rpncalculator.helpers.NPR
 import com.jakub.rpncalculator.helpers.PERCENT
 import com.jakub.rpncalculator.helpers.PLUS
 import com.jakub.rpncalculator.helpers.POWER
 import com.jakub.rpncalculator.helpers.ROOT
 import com.jakub.rpncalculator.helpers.RpnEngine
 import com.jakub.rpncalculator.helpers.SIN
+import com.jakub.rpncalculator.helpers.SINH
 import com.jakub.rpncalculator.helpers.SQUARE
 import com.jakub.rpncalculator.helpers.TAN
+import com.jakub.rpncalculator.helpers.TANH
 import com.jakub.rpncalculator.helpers.getDecimalSeparator
 
 class MainActivity : SimpleActivity(), Calculator {
@@ -54,6 +65,8 @@ class MainActivity : SimpleActivity(), Calculator {
     private var vibrateOnButtonPress = true
     private var saveCalculatorState: String = ""
     private var secondLayerActive = false
+    private var shiftActive = false
+    private var hypActive = false
     private lateinit var calc: CalculatorImpl
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -85,7 +98,9 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnPower.setOnClickOperation(POWER)
         calcBinding.btnRoot.setOnClickOperation(ROOT)
         calcBinding.btnEnter.setVibratingOnClickListener { calc.handleEnter() }
-        calcBinding.btnUndo.setVibratingOnClickListener { calc.handleUndo() }
+        calcBinding.btnUndo.setVibratingOnClickListener {
+            if (secondLayerActive) toggleShift() else calc.handleUndo()
+        }
         calcBinding.btnRollUp.setVibratingOnClickListener { calc.handleRollUp() }
         calcBinding.btnRollDown.setVibratingOnClickListener { calc.handleRollDown() }
         calcBinding.btnSwap.setVibratingOnClickListener { calc.handleSwap() }
@@ -99,15 +114,32 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnE.setVibratingOnClickListener { calc.handleConstant(RpnEngine.E) }
         calcBinding.btnLog.setOnClickOperation(LOG)
         calcBinding.btnLn.setOnClickOperation(LN)
-        calcBinding.btnSin.setOnClickOperation(SIN)
-        calcBinding.btnCos.setOnClickOperation(COS)
-        calcBinding.btnTan.setOnClickOperation(TAN)
+        calcBinding.btnHyp.setVibratingOnClickListener { toggleHyp() }
+        calcBinding.btnSin.setVibratingOnClickListener {
+            calc.handleOperation(resolveTrig(SIN, ASIN, SINH, ASINH))
+        }
+        calcBinding.btnCos.setVibratingOnClickListener {
+            calc.handleOperation(resolveTrig(COS, ACOS, COSH, ACOSH))
+        }
+        calcBinding.btnTan.setVibratingOnClickListener {
+            calc.handleOperation(resolveTrig(TAN, ATAN, TANH, ATANH))
+        }
         calcBinding.btnSquare.setOnClickOperation(SQUARE)
+        calcBinding.btnNpr.setOnClickOperation(NPR)
+        calcBinding.btnNcr.setOnClickOperation(NCR)
         calcBinding.btnMemoryClear.setVibratingOnClickListener { calc.handleMemoryClear() }
         calcBinding.btnMemoryRecall.setVibratingOnClickListener { calc.handleMemoryRecall() }
         calcBinding.btnMemoryAdd.setVibratingOnClickListener { calc.handleMemoryAdd() }
         calcBinding.btnMemorySubtract.setVibratingOnClickListener { calc.handleMemorySubtract() }
         updateSecondLayerVisibility()
+        updateModifierVisuals()
+
+        binding.angleUnitIndicator.text = calc.currentAngleUnit().name
+        binding.angleUnitIndicator.setTextColor(getProperTextColor())
+        binding.angleUnitIndicator.setVibratingOnClickListener {
+            calc.handleToggleAngleUnit()
+            binding.angleUnitIndicator.text = calc.currentAngleUnit().name
+        }
 
         getButtonIds().forEach {
             it.setVibratingOnClickListener { view ->
@@ -130,6 +162,7 @@ class MainActivity : SimpleActivity(), Calculator {
         setupMaterialScrollListener(binding.mainNestedScrollview, binding.mainAppbar)
         if (storedTextColor != config.textColor) {
             calcBinding.calculatorHolder.let { updateViewColors(it, getProperTextColor()) }
+            binding.angleUnitIndicator.setTextColor(getProperTextColor())
         }
 
         if (config.preventPhoneFromSleeping) {
@@ -144,9 +177,9 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace, btnAc,
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal,
                 btnRollUp, btnRollDown, btnUndo,
-                btnPi, btnE, btnLog, btnLn, btnSin, btnCos, btnTan, btnSquare,
+                btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnSquare,
+                btnNpr, btnNcr, btnBlank4,
                 btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
-                btnBlank1, btnBlank2, btnBlank3, btnBlank4,
                 btnBlankAc, btnBlankZero, btnBlankDecimal
             ).forEach {
                 it.background = ResourcesCompat.getDrawable(
@@ -177,6 +210,7 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun updateSecondLayerVisibility() {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
+        calcBinding.btnUndo.text = if (secondLayerActive) "shift" else "undo"
         calcBinding.apply {
             rowOperators.visibility = firstLayerVisibility
             row789.visibility = firstLayerVisibility
@@ -200,6 +234,39 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun updateSecondLayerToggleVisuals() {
         calcBinding.btnSecond.background?.alpha = if (secondLayerActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
     }
+
+    private fun toggleShift() {
+        shiftActive = !shiftActive
+        updateModifierVisuals()
+    }
+
+    private fun toggleHyp() {
+        hypActive = !hypActive
+        updateModifierVisuals()
+    }
+
+    private fun updateModifierVisuals() {
+        calcBinding.btnUndo.background?.alpha = if (shiftActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
+        calcBinding.btnHyp.background?.alpha = if (hypActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
+        calcBinding.btnSin.text = trigLabel("sin")
+        calcBinding.btnCos.text = trigLabel("cos")
+        calcBinding.btnTan.text = trigLabel("tan")
+    }
+
+    private fun trigLabel(base: String) = when {
+        shiftActive && hypActive -> "${base}h⁻¹"
+        hypActive -> "${base}h"
+        shiftActive -> "$base⁻¹"
+        else -> base
+    }
+
+    private fun resolveTrig(normal: String, inverse: String, hyperbolic: String, inverseHyperbolic: String) =
+        when {
+            shiftActive && hypActive -> inverseHyperbolic
+            hypActive -> hyperbolic
+            shiftActive -> inverse
+            else -> normal
+        }
 
     override fun onPause() {
         super.onPause()

@@ -19,7 +19,25 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/color_primary"
             app:menu="@menu/menu"
-            app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
+            app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle">
+
+            <TextView
+                android:id="@+id/angle_unit_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingStart="@dimen/activity_margin"
+                android:paddingTop="8dp"
+                android:paddingEnd="@dimen/activity_margin"
+                android:paddingBottom="8dp"
+                android:text="DEG"
+                android:textSize="14sp"
+                tools:ignore="HardcodedText" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </org.fossify.commons.views.MyAppBarLayout>
 

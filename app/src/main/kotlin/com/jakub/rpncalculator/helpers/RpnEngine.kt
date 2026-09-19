@@ -169,15 +169,45 @@ class RpnEngine {
 
         fun negate(a: BigDecimal): BigDecimal = a.negate()
 
-        // EvalEx's plain SIN/COS/TAN take degrees; the R-suffixed variants take radians.
-        fun sin(a: BigDecimal): BigDecimal =
-            evaluateExpression("SIN(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+        // EvalEx's R-suffixed trig functions take radians; converting through radians ourselves
+        // (rather than relying on EvalEx's degree-only functions) lets one code path support
+        // DEG/RAD/GRAD uniformly, since EvalEx has no gradian support at all.
+        fun sin(a: BigDecimal, unit: AngleUnit): BigDecimal =
+            evaluateExpression("SINR(${toRadians(a, unit).toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        fun cos(a: BigDecimal): BigDecimal =
-            evaluateExpression("COS(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+        fun cos(a: BigDecimal, unit: AngleUnit): BigDecimal =
+            evaluateExpression("COSR(${toRadians(a, unit).toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        fun tan(a: BigDecimal): BigDecimal =
-            evaluateExpression("TAN(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+        fun tan(a: BigDecimal, unit: AngleUnit): BigDecimal =
+            evaluateExpression("TANR(${toRadians(a, unit).toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
+        fun asin(a: BigDecimal, unit: AngleUnit): BigDecimal =
+            fromRadians(evaluateExpression("ASINR(${a.toPlainString()})"), unit).round(TRANSCENDENTAL_CONTEXT)
+
+        fun acos(a: BigDecimal, unit: AngleUnit): BigDecimal =
+            fromRadians(evaluateExpression("ACOSR(${a.toPlainString()})"), unit).round(TRANSCENDENTAL_CONTEXT)
+
+        fun atan(a: BigDecimal, unit: AngleUnit): BigDecimal =
+            fromRadians(evaluateExpression("ATANR(${a.toPlainString()})"), unit).round(TRANSCENDENTAL_CONTEXT)
+
+        // Hyperbolic functions take no angle argument, so they're unaffected by the angle unit.
+        fun sinh(a: BigDecimal): BigDecimal =
+            evaluateExpression("SINH(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
+        fun cosh(a: BigDecimal): BigDecimal =
+            evaluateExpression("COSH(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
+        fun tanh(a: BigDecimal): BigDecimal =
+            evaluateExpression("TANH(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
+        fun asinh(a: BigDecimal): BigDecimal =
+            evaluateExpression("ASINH(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
+        fun acosh(a: BigDecimal): BigDecimal =
+            evaluateExpression("ACOSH(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
+        fun atanh(a: BigDecimal): BigDecimal =
+            evaluateExpression("ATANH(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
         // EvalEx names this the other way round from calculator convention: its LOG is natural
         // log, not base-10.
@@ -187,6 +217,50 @@ class RpnEngine {
         /** log base [base] of [argument], via the change-of-base identity. */
         fun logBase(argument: BigDecimal, base: BigDecimal): BigDecimal =
             ln(argument).divide(ln(base), TRANSCENDENTAL_CONTEXT)
+
+        /** Number of permutations of [r] items taken from [n]: n! / (n - r)!. */
+        fun nPr(n: BigDecimal, r: BigDecimal): BigDecimal {
+            val (nInt, rInt) = validatedNAndR(n, r)
+            var result = BigDecimal.ONE
+            for (i in 0 until rInt) {
+                result = result.multiply(BigDecimal(nInt - i))
+            }
+            return result
+        }
+
+        /** Number of combinations of [r] items taken from [n]: n! / (r! (n - r)!). */
+        fun nCr(n: BigDecimal, r: BigDecimal): BigDecimal {
+            val (nInt, rInt) = validatedNAndR(n, r)
+            val smallerR = minOf(rInt, nInt - rInt)
+            var numerator = BigDecimal.ONE
+            var denominator = BigDecimal.ONE
+            for (i in 0 until smallerR) {
+                numerator = numerator.multiply(BigDecimal(nInt - i))
+                denominator = denominator.multiply(BigDecimal(i + 1))
+            }
+            return numerator.divide(denominator, MATH_CONTEXT)
+        }
+
+        private fun validatedNAndR(n: BigDecimal, r: BigDecimal): Pair<Int, Int> {
+            val nInt = n.intValueExact()
+            val rInt = r.intValueExact()
+            if (nInt < 0 || rInt < 0 || rInt > nInt) {
+                throw ArithmeticException("nPr/nCr require 0 <= r <= n")
+            }
+            return nInt to rInt
+        }
+
+        private fun toRadians(value: BigDecimal, unit: AngleUnit): BigDecimal = when (unit) {
+            AngleUnit.RAD -> value
+            AngleUnit.DEG -> value.multiply(PI, MATH_CONTEXT).divide(BigDecimal(180), MATH_CONTEXT)
+            AngleUnit.GRAD -> value.multiply(PI, MATH_CONTEXT).divide(BigDecimal(200), MATH_CONTEXT)
+        }
+
+        private fun fromRadians(value: BigDecimal, unit: AngleUnit): BigDecimal = when (unit) {
+            AngleUnit.RAD -> value
+            AngleUnit.DEG -> value.multiply(BigDecimal(180), MATH_CONTEXT).divide(PI, MATH_CONTEXT)
+            AngleUnit.GRAD -> value.multiply(BigDecimal(200), MATH_CONTEXT).divide(PI, MATH_CONTEXT)
+        }
 
         private fun evaluateExpression(expression: String): BigDecimal {
             return Expression(expression).evaluate().numberValue

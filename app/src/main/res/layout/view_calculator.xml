@@ -335,6 +335,15 @@
         android:visibility="gone">
 
         <TextView
+            android:id="@+id/btn_hyp"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="hyp"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/btn_sin"
             style="@style/MyButton"
             android:layout_width="0dp"
@@ -360,14 +369,6 @@
             android:layout_weight="1"
             android:text="tan"
             android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/btn_square"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="x²" />
 
     </LinearLayout>
 
@@ -421,25 +422,30 @@
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/btn_blank_1"
+            android:id="@+id/btn_square"
             style="@style/MyButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="x²" />
 
         <TextView
-            android:id="@+id/btn_blank_2"
+            android:id="@+id/btn_npr"
             style="@style/MyButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="nPr"
+            android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/btn_blank_3"
+            android:id="@+id/btn_ncr"
             style="@style/MyButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="nCr"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/btn_blank_4"

@@ -216,10 +216,61 @@ class RpnEngineTest {
     }
 
     @Test
-    fun `sin cos and tan use degrees`() {
-        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.sin(BigDecimal(90))))
-        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.cos(BigDecimal.ZERO)))
-        assertEquals(0, BigDecimal.ZERO.compareTo(RpnEngine.tan(BigDecimal.ZERO)))
+    fun `sin cos and tan support degrees, radians and gradians`() {
+        val tolerance = BigDecimal("1e-10")
+
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.sin(BigDecimal(90), AngleUnit.DEG)))
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.cos(BigDecimal.ZERO, AngleUnit.DEG)))
+        assertEquals(0, BigDecimal.ZERO.compareTo(RpnEngine.tan(BigDecimal.ZERO, AngleUnit.DEG)))
+
+        assertTrue(RpnEngine.sin(RpnEngine.PI.divide(BigDecimal(2)), AngleUnit.RAD).subtract(BigDecimal.ONE).abs() < tolerance)
+        assertTrue(RpnEngine.sin(BigDecimal(100), AngleUnit.GRAD).subtract(BigDecimal.ONE).abs() < tolerance)
+    }
+
+    @Test
+    fun `asin acos and atan are the inverse of sin cos and tan`() {
+        val tolerance = BigDecimal("1e-10")
+
+        assertTrue(RpnEngine.asin(BigDecimal.ONE, AngleUnit.DEG).subtract(BigDecimal(90)).abs() < tolerance)
+        assertTrue(RpnEngine.acos(BigDecimal.ONE, AngleUnit.DEG).abs() < tolerance)
+        assertTrue(RpnEngine.atan(BigDecimal.ONE, AngleUnit.DEG).subtract(BigDecimal(45)).abs() < tolerance)
+        assertTrue(RpnEngine.asin(BigDecimal.ONE, AngleUnit.GRAD).subtract(BigDecimal(100)).abs() < tolerance)
+    }
+
+    @Test
+    fun `hyperbolic and inverse hyperbolic functions round-trip`() {
+        val tolerance = BigDecimal("1e-10")
+
+        assertTrue(RpnEngine.sinh(BigDecimal.ZERO).abs() < tolerance)
+        assertTrue(RpnEngine.cosh(BigDecimal.ZERO).subtract(BigDecimal.ONE).abs() < tolerance)
+        assertTrue(RpnEngine.tanh(BigDecimal.ZERO).abs() < tolerance)
+
+        val x = BigDecimal("1.5")
+        assertTrue(RpnEngine.asinh(RpnEngine.sinh(x)).subtract(x).abs() < tolerance)
+        assertTrue(RpnEngine.acosh(RpnEngine.cosh(x)).subtract(x).abs() < tolerance)
+        assertTrue(RpnEngine.atanh(RpnEngine.tanh(x)).subtract(x).abs() < tolerance)
+    }
+
+    @Test
+    fun `nPr counts ordered arrangements`() {
+        assertEquals(0, BigDecimal(20).compareTo(RpnEngine.nPr(BigDecimal(5), BigDecimal(2))))
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.nPr(BigDecimal(5), BigDecimal.ZERO)))
+    }
+
+    @Test
+    fun `nCr counts unordered selections`() {
+        assertEquals(0, BigDecimal(10).compareTo(RpnEngine.nCr(BigDecimal(5), BigDecimal(2))))
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.nCr(BigDecimal(5), BigDecimal(5))))
+    }
+
+    @Test
+    fun `nPr and nCr reject r greater than n`() {
+        try {
+            RpnEngine.nPr(BigDecimal(2), BigDecimal(5))
+            assertTrue("expected ArithmeticException", false)
+        } catch (_: ArithmeticException) {
+            // expected
+        }
     }
 
     @Test

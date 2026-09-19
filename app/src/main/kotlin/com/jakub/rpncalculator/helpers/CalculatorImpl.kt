@@ -11,6 +11,10 @@ import java.math.BigDecimal
 
 private const val MAX_UNDO_HISTORY = 100
 
+private val NAMED_UNARY_FUNCTIONS = setOf(
+    SIN, COS, TAN, ASIN, ACOS, ATAN, SINH, COSH, TANH, ASINH, ACOSH, ATANH, LN
+)
+
 private data class CalculatorSnapshot(
     val stack: List<BigDecimal>,
     val entry: String,
@@ -31,6 +35,7 @@ class CalculatorImpl(
     private val engine = RpnEngine()
     private var entry = "0"
     private var entryActive = false
+    private var angleUnit = AngleUnit.DEG
     private val formatter = NumberFormatHelper()
     private val undoHistory = ArrayDeque<CalculatorSnapshot>()
 
@@ -198,6 +203,12 @@ class CalculatorImpl(
 
     private fun currentXValue(): BigDecimal? = if (entryActive) parseEntry() else engine.peek()
 
+    fun currentAngleUnit(): AngleUnit = angleUnit
+
+    fun handleToggleAngleUnit() {
+        angleUnit = angleUnit.next()
+    }
+
     fun handleDrop() {
         pushHistory()
         if (entryActive) {
@@ -293,15 +304,23 @@ class CalculatorImpl(
     private fun isUnary(operation: String) = operation == ROOT || operation == PERCENT ||
         operation == SQUARE || isNamedFunction(operation)
 
-    private fun isNamedFunction(operation: String) = operation == SIN || operation == COS ||
-        operation == TAN || operation == LN
+    private fun isNamedFunction(operation: String) = operation in NAMED_UNARY_FUNCTIONS
 
     private fun unaryFunction(operation: String): (BigDecimal) -> BigDecimal = when (operation) {
         ROOT -> RpnEngine.Companion::sqrt
         SQUARE -> RpnEngine.Companion::square
-        SIN -> RpnEngine.Companion::sin
-        COS -> RpnEngine.Companion::cos
-        TAN -> RpnEngine.Companion::tan
+        SIN -> { a -> RpnEngine.sin(a, angleUnit) }
+        COS -> { a -> RpnEngine.cos(a, angleUnit) }
+        TAN -> { a -> RpnEngine.tan(a, angleUnit) }
+        ASIN -> { a -> RpnEngine.asin(a, angleUnit) }
+        ACOS -> { a -> RpnEngine.acos(a, angleUnit) }
+        ATAN -> { a -> RpnEngine.atan(a, angleUnit) }
+        SINH -> RpnEngine.Companion::sinh
+        COSH -> RpnEngine.Companion::cosh
+        TANH -> RpnEngine.Companion::tanh
+        ASINH -> RpnEngine.Companion::asinh
+        ACOSH -> RpnEngine.Companion::acosh
+        ATANH -> RpnEngine.Companion::atanh
         LN -> RpnEngine.Companion::ln
         else -> RpnEngine.Companion::percent
     }
@@ -313,6 +332,8 @@ class CalculatorImpl(
             MULTIPLY -> RpnEngine.Companion::multiply
             DIVIDE -> RpnEngine.Companion::divide
             LOG -> RpnEngine.Companion::logBase
+            NPR -> RpnEngine.Companion::nPr
+            NCR -> RpnEngine.Companion::nCr
             else -> RpnEngine.Companion::power
         }
 
@@ -327,7 +348,18 @@ class CalculatorImpl(
         SIN -> "sin"
         COS -> "cos"
         TAN -> "tan"
+        ASIN -> "sin⁻¹"
+        ACOS -> "cos⁻¹"
+        ATAN -> "tan⁻¹"
+        SINH -> "sinh"
+        COSH -> "cosh"
+        TANH -> "tanh"
+        ASINH -> "sinh⁻¹"
+        ACOSH -> "cosh⁻¹"
+        ATANH -> "tanh⁻¹"
         LN -> "ln"
+        NPR -> "nPr"
+        NCR -> "nCr"
         else -> "%"
     }
 
@@ -392,6 +424,7 @@ class CalculatorImpl(
         jsonObj.put(ENTRY, entry)
         jsonObj.put(ENTRY_ACTIVE, entryActive)
         jsonObj.put(MEMORY, engine.memoryValue().toString())
+        jsonObj.put(ANGLE_UNIT, angleUnit.name)
         return jsonObj
     }
 
@@ -414,6 +447,11 @@ class CalculatorImpl(
             engine.setMemoryValue(BigDecimal(jsonObject.optString(MEMORY, "0")))
         } catch (_: NumberFormatException) {
             // keep the default (zero) memory value
+        }
+        try {
+            angleUnit = AngleUnit.valueOf(jsonObject.optString(ANGLE_UNIT, AngleUnit.DEG.name))
+        } catch (_: IllegalArgumentException) {
+            angleUnit = AngleUnit.DEG
         }
     }
 }
