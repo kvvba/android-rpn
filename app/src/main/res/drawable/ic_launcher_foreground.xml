@@ -1,5 +1,5 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="512" android:viewportHeight="512">
-    <!-- Italian-Futurist "dynamism of a sigma": three trailing copies of an angular sigma glyph,
+    <!-- Italian-Futurist "dynamism of a delta": three trailing copies of an angular delta glyph,
          translated along one diagonal and fading in, evoking Balla/Boccioni's repeated-silhouette
          technique for depicting motion, plus a few speed-streak lines trailing the motion. -->
     <group
@@ -12,14 +12,17 @@
         <path android:pathData="M93,401 h8 v30 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.2" />
     </group>
     <path
-        android:pathData="M131,201 L291,201 L186,301 L291,401 L131,401 Z"
+        android:pathData="M211,201 L291,401 L131,401 Z M211,261 L255,371 L167,371 Z"
         android:fillColor="#FFFFFFFF"
-        android:fillAlpha="0.35" />
+        android:fillAlpha="0.35"
+        android:fillType="evenOdd" />
     <path
-        android:pathData="M176,156 L336,156 L231,256 L336,356 L176,356 Z"
+        android:pathData="M256,156 L336,356 L176,356 Z M256,216 L300,326 L212,326 Z"
         android:fillColor="#FFFFFFFF"
-        android:fillAlpha="0.65" />
+        android:fillAlpha="0.65"
+        android:fillType="evenOdd" />
     <path
-        android:pathData="M221,111 L381,111 L276,211 L381,311 L221,311 Z"
-        android:fillColor="#FFFFFFFF" />
+        android:pathData="M301,111 L381,311 L221,311 Z M301,171 L345,281 L257,281 Z"
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd" />
 </vector>

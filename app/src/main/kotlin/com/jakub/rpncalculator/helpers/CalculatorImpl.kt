@@ -296,6 +296,16 @@ class CalculatorImpl(
         angleUnit = angleUnit.next()
     }
 
+    /** Converts X from the current angle unit to the next one, then switches to it. */
+    fun handleConvertAngleUnit() {
+        pushHistory()
+        ensureEntryPushed()
+        val nextUnit = angleUnit.next()
+        engine.dropTop()?.let { engine.push(RpnEngine.convertAngle(it, angleUnit, nextUnit)) }
+        angleUnit = nextUnit
+        refreshDisplay()
+    }
+
     fun currentDisplayMode(): DisplayMode = displayMode
 
     fun handleToggleDisplayMode() {
@@ -304,23 +314,23 @@ class CalculatorImpl(
         refreshDisplay()
     }
 
-    /** Shifts the engineering exponent down (toward, and past, the natural grouping); unbounded. */
-    fun handleShiftEngineeringDown() {
-        if (displayMode != DisplayMode.ENGINEERING) {
-            displayMode = DisplayMode.ENGINEERING
-            engineeringShift = 0
-        }
-        engineeringShift -= 3
-        refreshDisplay()
-    }
-
-    /** Shifts the engineering exponent up by another multiple of 3; unbounded. */
-    fun handleShiftEngineeringUp() {
+    /** Moves the engineering decimal point left (raises the exponent by 3); unbounded. */
+    fun handleShiftDecimalLeft() {
         if (displayMode != DisplayMode.ENGINEERING) {
             displayMode = DisplayMode.ENGINEERING
             engineeringShift = 0
         }
         engineeringShift += 3
+        refreshDisplay()
+    }
+
+    /** Moves the engineering decimal point right (lowers the exponent by 3); unbounded. */
+    fun handleShiftDecimalRight() {
+        if (displayMode != DisplayMode.ENGINEERING) {
+            displayMode = DisplayMode.ENGINEERING
+            engineeringShift = 0
+        }
+        engineeringShift -= 3
         refreshDisplay()
     }
 

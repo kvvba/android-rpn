@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Deep poster red, evoking Italian Futurist graphic design (Depero, Balla). -->
+    <!-- Deep poster red, evoking Italian Futurist graphic design (Depero, Balla). Default app
+         icon background; also used by the "Red" entry of the customizable icon-color set below. -->
     <color name="launcher_icon_background">#FFC62828</color>
+
+    <!-- Remaining stops of Fossify's 19-color app-icon palette (md_app_icon_colors), used for
+         the icon-color-alias background variants so "Customize appearance" works for this app. -->
+    <color name="launcher_icon_background_pink">#FFC2185B</color>
+    <color name="launcher_icon_background_purple">#FF7B1FA2</color>
+    <color name="launcher_icon_background_deep_purple">#FF512DA8</color>
+    <color name="launcher_icon_background_indigo">#FF303F9F</color>
+    <color name="launcher_icon_background_blue">#FF1976D2</color>
+    <color name="launcher_icon_background_light_blue">#FF0288D1</color>
+    <color name="launcher_icon_background_cyan">#FF0097A7</color>
+    <color name="launcher_icon_background_teal">#FF00796B</color>
+    <color name="launcher_icon_background_green">#FF106D1F</color>
+    <color name="launcher_icon_background_light_green">#FF689F38</color>
+    <color name="launcher_icon_background_lime">#FFA4B42B</color>
+    <color name="launcher_icon_background_yellow">#FFFBC02D</color>
+    <color name="launcher_icon_background_amber">#FFFFA000</color>
+    <color name="launcher_icon_background_orange">#FFF57C00</color>
+    <color name="launcher_icon_background_deep_orange">#FFE64A19</color>
+    <color name="launcher_icon_background_brown">#FF5D4037</color>
+    <color name="launcher_icon_background_blue_grey">#FF455A64</color>
+    <color name="launcher_icon_background_grey_black">#FF000000</color>
 </resources>

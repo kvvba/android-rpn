@@ -303,6 +303,10 @@ class RpnEngine {
             AngleUnit.GRAD -> value.multiply(BigDecimal(200), MATH_CONTEXT).divide(PI, MATH_CONTEXT)
         }
 
+        /** Converts [value] expressed in [from] angle unit to its equivalent in [to]. */
+        fun convertAngle(value: BigDecimal, from: AngleUnit, to: AngleUnit): BigDecimal =
+            fromRadians(toRadians(value, from), to)
+
         private fun evaluateExpression(expression: String): BigDecimal {
             return Expression(expression).evaluate().numberValue
                 ?: throw ArithmeticException("Invalid expression: $expression")

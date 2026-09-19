@@ -125,6 +125,10 @@ class MainActivity : SimpleActivity(), Calculator {
 
         calcBinding.btnSecond.setVibratingOnClickListener { toggleSecondLayer() }
         calcBinding.btnConst.setVibratingOnClickListener { showConstantsPicker() }
+        calcBinding.btnConst.setVibratingOnLongClickListener {
+            calc.handleConvertAngleUnit()
+            binding.angleUnitIndicator.text = calc.currentAngleUnit().name
+        }
         calcBinding.btnLog.setOnClickOperation(LOG)
         calcBinding.btnLn.setVibratingOnClickListener { calc.handleOperation(LN) }
         calcBinding.btnLn.setVibratingOnLongClickListener { calc.handleOperation(EXP) }
@@ -153,7 +157,7 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnMod.setVibratingOnLongClickListener { calc.handleOperation(QUOTIENT) }
         calcBinding.btnExponent.setVibratingOnClickListener { calc.handleExponent() }
         calcBinding.btnExponent.setVibratingOnLongClickListener {
-            calc.handleShiftEngineeringDown()
+            calc.handleShiftDecimalLeft()
             updateDisplayModeIndicator()
         }
         calcBinding.btn7.setVibratingOnLongClickListener { calc.handleOperation(FACTORIAL) }
@@ -192,7 +196,7 @@ class MainActivity : SimpleActivity(), Calculator {
             }
         }
         calcBinding.btn0.setVibratingOnLongClickListener {
-            calc.handleShiftEngineeringUp()
+            calc.handleShiftDecimalRight()
             updateDisplayModeIndicator()
         }
 
@@ -229,8 +233,7 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal, btnExponent,
                 btnRollDown, btnUndo,
                 btnConst, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnLog10,
-                btnMod,
-                btnBlankZero, btnBlankDecimal, btnBlankExponent
+                btnMod
             ).forEach {
                 it.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
@@ -260,24 +263,20 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun updateSecondLayerVisibility() {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
-        // Rows with no dedicated 2nd-layer content go INVISIBLE rather than GONE, so the row
-        // keeps its space and the total row count (and therefore button size) stays the same
-        // whichever layer is active.
-        val blankOnSecondLayer = if (secondLayerActive) View.INVISIBLE else View.VISIBLE
+        // Each layer's row group is its own container with its own row order, so layer 2 can
+        // show hyp/mod right away (no leading gap) while still matching layer 1's total row
+        // count (via trailing blank rows) so button size never jumps between layers.
         calcBinding.apply {
-            rowOperators.visibility = blankOnSecondLayer
-            row789.visibility = firstLayerVisibility
-            row456.visibility = firstLayerVisibility
-            row123.visibility = blankOnSecondLayer
+            layer1Rows.visibility = firstLayerVisibility
+            layer2Rows.visibility = secondLayerVisibility
             btn0.visibility = firstLayerVisibility
             btnDecimal.visibility = firstLayerVisibility
             btnExponent.visibility = firstLayerVisibility
 
-            rowConstants.visibility = secondLayerVisibility
-            rowTrig.visibility = secondLayerVisibility
-            btnBlankZero.visibility = secondLayerVisibility
-            btnBlankDecimal.visibility = secondLayerVisibility
-            btnBlankExponent.visibility = secondLayerVisibility
+            val bottomRowBlankVisibility = if (secondLayerActive) View.INVISIBLE else View.GONE
+            btnBlankZero.visibility = bottomRowBlankVisibility
+            btnBlankDecimal.visibility = bottomRowBlankVisibility
+            btnBlankExponent.visibility = bottomRowBlankVisibility
         }
         updateSecondLayerToggleVisuals()
     }
@@ -302,10 +301,10 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun setTrigLabels(primaryView: TextView, secondaryView: TextView, base: String) {
         if (hypActive) {
             primaryView.text = "${base}h"
-            secondaryView.text = "${base}h⁻¹"
+            secondaryView.text = "a${base}h"
         } else {
             primaryView.text = base
-            secondaryView.text = "$base⁻¹"
+            secondaryView.text = "a$base"
         }
     }
 
