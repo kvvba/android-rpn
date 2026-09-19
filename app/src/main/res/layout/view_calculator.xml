@@ -633,52 +633,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/row_blank"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/btn_npr"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="nPr"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/btn_ncr"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="nCr"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/btn_percent_change"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Δ%"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/btn_factorial"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="n!"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"

@@ -294,8 +294,18 @@ class ConverterView @JvmOverloads constructor(
             }
 
             // For unit conversion, now using BigDecimal throughout
-            val converted = convert(topUnit!!.withValue(topValue), bottomUnit!!).value
-            binding.bottomUnitText.text = formatter.bigDecimalToString(converted)
+            @Suppress("SwallowedException")
+            val converted = try {
+                convert(topUnit!!.withValue(topValue), bottomUnit!!).value
+            } catch (_: ArithmeticException) {
+                // Reciprocal units (e.g. distance-per-volume) are undefined at zero
+                null
+            }
+            binding.bottomUnitText.text = if (converted != null) {
+                formatter.bigDecimalToString(converted)
+            } else {
+                "∞"
+            }
         }
     }
 

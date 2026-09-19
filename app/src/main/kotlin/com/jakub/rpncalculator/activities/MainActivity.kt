@@ -149,10 +149,6 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnTan.setVibratingOnLongClickListener {
             calc.handleOperation(if (hypActive) ATANH else ATAN)
         }
-        calcBinding.btnNpr.setOnClickOperation(NPR)
-        calcBinding.btnNcr.setOnClickOperation(NCR)
-        calcBinding.btnPercentChange.setOnClickOperation(PERCENT_CHANGE)
-        calcBinding.btnFactorial.setOnClickOperation(FACTORIAL)
         calcBinding.btnMod.setVibratingOnClickListener { calc.handleOperation(MODULUS) }
         calcBinding.btnMod.setVibratingOnLongClickListener { calc.handleOperation(QUOTIENT) }
         calcBinding.btnExponent.setVibratingOnClickListener { calc.handleExponent() }
@@ -227,7 +223,7 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal, btnExponent,
                 btnRollDown, btnUndo,
                 btnConst, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnLog10,
-                btnNpr, btnNcr, btnPercentChange, btnFactorial, btnMod,
+                btnMod,
                 btnBlankZero, btnBlankDecimal, btnBlankExponent
             ).forEach {
                 it.background = ResourcesCompat.getDrawable(
@@ -259,6 +255,7 @@ class MainActivity : SimpleActivity(), Calculator {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
         calcBinding.apply {
+            rowOperators.visibility = firstLayerVisibility
             row789.visibility = firstLayerVisibility
             row456.visibility = firstLayerVisibility
             row123.visibility = firstLayerVisibility
@@ -268,7 +265,6 @@ class MainActivity : SimpleActivity(), Calculator {
 
             rowConstants.visibility = secondLayerVisibility
             rowTrig.visibility = secondLayerVisibility
-            rowBlank.visibility = secondLayerVisibility
             btnBlankZero.visibility = secondLayerVisibility
             btnBlankDecimal.visibility = secondLayerVisibility
             btnBlankExponent.visibility = secondLayerVisibility
