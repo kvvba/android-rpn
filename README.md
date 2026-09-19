@@ -23,6 +23,15 @@ entry model instead of infix expressions.
   Poland, Hungary, Germany, France).
 - **History** of past calculations, and persistent per-converter unit choices.
 
+## Installing
+
+Releases are published as signed APKs on the [Releases page](../../releases), tracked via
+[Obtainium](https://github.com/ImranR98/Obtainium):
+
+1. In Obtainium, tap **Add App**.
+2. Paste this repo's URL: `https://github.com/kvvba/android-rpn`.
+3. Obtainium will pick up new versions automatically whenever a release is published here.
+
 ## Building
 
 ```
