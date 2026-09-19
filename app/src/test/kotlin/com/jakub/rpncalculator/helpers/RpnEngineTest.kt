@@ -223,9 +223,23 @@ class RpnEngineTest {
     }
 
     @Test
-    fun `log10 is base-10 and ln is natural log`() {
-        assertEquals(0, BigDecimal(2).compareTo(RpnEngine.log10(BigDecimal(100))))
+    fun `ln is natural log`() {
         assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.ln(RpnEngine.E)))
+    }
+
+    @Test
+    fun `logBase computes log of the argument in the given base`() {
+        // Computed via the change-of-base identity (ln(argument) / ln(base)). EvalEx's LOG is
+        // double-precision internally regardless of the requested MathContext (confirmed: it
+        // returns ln(8) as exactly 17 significant digits), so even a clean answer like this can
+        // land ~1e-16 off — a tight tolerance, not exact equality, is the correct check here.
+        val tolerance = BigDecimal("1e-10")
+        assertTrue(
+            RpnEngine.logBase(BigDecimal(100), BigDecimal(10)).subtract(BigDecimal(2)).abs() < tolerance
+        )
+        assertTrue(
+            RpnEngine.logBase(BigDecimal(8), BigDecimal(2)).subtract(BigDecimal(3)).abs() < tolerance
+        )
     }
 
     @Test

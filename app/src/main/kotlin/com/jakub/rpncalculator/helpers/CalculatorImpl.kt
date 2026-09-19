@@ -273,10 +273,12 @@ class CalculatorImpl(
             val outcome = engine.applyBinary(binaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (a != null && b != null) {
-                    recordHistory(
-                        "${a.format()} ${symbolFor(operation)} ${b.format()}",
-                        result.format()
-                    )
+                    val formula = if (operation == LOG) {
+                        "log_${b.format()}(${a.format()})"
+                    } else {
+                        "${a.format()} ${symbolFor(operation)} ${b.format()}"
+                    }
+                    recordHistory(formula, result.format())
                 }
             }
         }
@@ -292,7 +294,7 @@ class CalculatorImpl(
         operation == SQUARE || isNamedFunction(operation)
 
     private fun isNamedFunction(operation: String) = operation == SIN || operation == COS ||
-        operation == TAN || operation == LOG || operation == LN
+        operation == TAN || operation == LN
 
     private fun unaryFunction(operation: String): (BigDecimal) -> BigDecimal = when (operation) {
         ROOT -> RpnEngine.Companion::sqrt
@@ -300,7 +302,6 @@ class CalculatorImpl(
         SIN -> RpnEngine.Companion::sin
         COS -> RpnEngine.Companion::cos
         TAN -> RpnEngine.Companion::tan
-        LOG -> RpnEngine.Companion::log10
         LN -> RpnEngine.Companion::ln
         else -> RpnEngine.Companion::percent
     }
@@ -311,6 +312,7 @@ class CalculatorImpl(
             MINUS -> RpnEngine.Companion::subtract
             MULTIPLY -> RpnEngine.Companion::multiply
             DIVIDE -> RpnEngine.Companion::divide
+            LOG -> RpnEngine.Companion::logBase
             else -> RpnEngine.Companion::power
         }
 
@@ -325,7 +327,6 @@ class CalculatorImpl(
         SIN -> "sin"
         COS -> "cos"
         TAN -> "tan"
-        LOG -> "log"
         LN -> "ln"
         else -> "%"
     }

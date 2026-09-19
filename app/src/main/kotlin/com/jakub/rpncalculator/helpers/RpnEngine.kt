@@ -2,6 +2,7 @@ package com.jakub.rpncalculator.helpers
 
 import com.ezylang.evalex.Expression
 import java.math.BigDecimal
+import java.math.MathContext
 
 enum class RpnError {
     INSUFFICIENT_STACK,
@@ -121,6 +122,17 @@ class RpnEngine {
 
     companion object {
         /**
+         * EvalEx's trig/log functions are backed by double-precision math internally regardless
+         * of the MathContext they're asked to evaluate with (confirmed by inspection: LOG(8)
+         * comes back as exactly 17 significant digits, a double's ceiling). Rounding their
+         * results to this precision is honest about what's actually reliable, rather than
+         * carrying ~19 extra digits of noise up to [MATH_CONTEXT] that can make an otherwise
+         * clean answer (e.g. a base-2 log of a power of two) miss exact equality by roughly
+         * 1e-16 and needlessly trip the display's scientific-notation fallback.
+         */
+        private val TRANSCENDENTAL_CONTEXT = MathContext(15)
+
+        /**
          * The full-precision constants below come from EvalEx's own literals, which carry more
          * digits than [MATH_CONTEXT]; rounding here keeps them consistent with every other value
          * this engine produces.
@@ -158,17 +170,23 @@ class RpnEngine {
         fun negate(a: BigDecimal): BigDecimal = a.negate()
 
         // EvalEx's plain SIN/COS/TAN take degrees; the R-suffixed variants take radians.
-        fun sin(a: BigDecimal): BigDecimal = evaluateExpression("SIN(${a.toPlainString()})")
+        fun sin(a: BigDecimal): BigDecimal =
+            evaluateExpression("SIN(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        fun cos(a: BigDecimal): BigDecimal = evaluateExpression("COS(${a.toPlainString()})")
+        fun cos(a: BigDecimal): BigDecimal =
+            evaluateExpression("COS(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        fun tan(a: BigDecimal): BigDecimal = evaluateExpression("TAN(${a.toPlainString()})")
+        fun tan(a: BigDecimal): BigDecimal =
+            evaluateExpression("TAN(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        // EvalEx names these the other way round from calculator convention: its LOG is natural
-        // log and its LOG10 is base-10 log.
-        fun log10(a: BigDecimal): BigDecimal = evaluateExpression("LOG10(${a.toPlainString()})")
+        // EvalEx names this the other way round from calculator convention: its LOG is natural
+        // log, not base-10.
+        fun ln(a: BigDecimal): BigDecimal =
+            evaluateExpression("LOG(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        fun ln(a: BigDecimal): BigDecimal = evaluateExpression("LOG(${a.toPlainString()})")
+        /** log base [base] of [argument], via the change-of-base identity. */
+        fun logBase(argument: BigDecimal, base: BigDecimal): BigDecimal =
+            ln(argument).divide(ln(base), TRANSCENDENTAL_CONTEXT)
 
         private fun evaluateExpression(expression: String): BigDecimal {
             return Expression(expression).evaluate().numberValue

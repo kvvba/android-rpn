@@ -146,7 +146,9 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal,
                 btnRollUp, btnRollDown, btnUndo,
                 btnPi, btnE, btnLog, btnLn, btnSin, btnCos, btnTan, btnSquare,
-                btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract
+                btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
+                btnBlank1, btnBlank2, btnBlank3, btnBlank4,
+                btnBlankAc, btnBlankZero, btnBlankDecimal
             ).forEach {
                 it?.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
@@ -177,12 +179,21 @@ class MainActivity : SimpleActivity(), Calculator {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
         binding.apply {
+            rowOperators?.visibility = firstLayerVisibility
             row789?.visibility = firstLayerVisibility
             row456?.visibility = firstLayerVisibility
             row123?.visibility = firstLayerVisibility
+            btnAc?.visibility = firstLayerVisibility
+            btn0?.visibility = firstLayerVisibility
+            btnDecimal?.visibility = firstLayerVisibility
+
+            rowMemory?.visibility = secondLayerVisibility
             rowConstants?.visibility = secondLayerVisibility
             rowTrig?.visibility = secondLayerVisibility
-            rowMemory?.visibility = secondLayerVisibility
+            rowBlank?.visibility = secondLayerVisibility
+            btnBlankAc?.visibility = secondLayerVisibility
+            btnBlankZero?.visibility = secondLayerVisibility
+            btnBlankDecimal?.visibility = secondLayerVisibility
         }
         updateSecondLayerToggleVisuals()
     }
