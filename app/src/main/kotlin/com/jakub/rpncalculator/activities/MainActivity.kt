@@ -3,9 +3,6 @@ package com.jakub.rpncalculator.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
@@ -104,7 +101,6 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnRollUp.setVibratingOnClickListener { calc.handleRollUp() }
         calcBinding.btnRollDown.setVibratingOnClickListener { calc.handleRollDown() }
         calcBinding.btnSwap.setVibratingOnClickListener { calc.handleSwap() }
-        calcBinding.btnDrop.text = twoLineLabel("AC", "drop")
         calcBinding.btnDrop.setVibratingOnClickListener { calc.handleDrop() }
         calcBinding.btnDrop.setVibratingOnLongClickListener { calc.handleReset() }
         calcBinding.btnChs.setVibratingOnClickListener { calc.handleChs() }
@@ -192,7 +188,7 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnSquare,
                 btnNpr, btnNcr, btnXthroot,
                 btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
-                btnBlankZero, btnBlankDecimal
+                btnBlankZero, btnBlankDecimal, btnBlankExponent
             ).forEach {
                 it.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
@@ -229,6 +225,7 @@ class MainActivity : SimpleActivity(), Calculator {
             row123.visibility = firstLayerVisibility
             btn0.visibility = firstLayerVisibility
             btnDecimal.visibility = firstLayerVisibility
+            btnExponent.visibility = firstLayerVisibility
 
             rowMemory.visibility = secondLayerVisibility
             rowConstants.visibility = secondLayerVisibility
@@ -236,6 +233,7 @@ class MainActivity : SimpleActivity(), Calculator {
             rowBlank.visibility = secondLayerVisibility
             btnBlankZero.visibility = secondLayerVisibility
             btnBlankDecimal.visibility = secondLayerVisibility
+            btnBlankExponent.visibility = secondLayerVisibility
         }
         updateSecondLayerToggleVisuals()
     }
@@ -251,22 +249,19 @@ class MainActivity : SimpleActivity(), Calculator {
 
     private fun updateModifierVisuals() {
         calcBinding.btnHyp.background?.alpha = if (hypActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
-        calcBinding.btnSin.text = trigLabel("sin")
-        calcBinding.btnCos.text = trigLabel("cos")
-        calcBinding.btnTan.text = trigLabel("tan")
+        setTrigLabels(calcBinding.btnSinPrimary, calcBinding.btnSinSecondary, "sin")
+        setTrigLabels(calcBinding.btnCosPrimary, calcBinding.btnCosSecondary, "cos")
+        setTrigLabels(calcBinding.btnTanPrimary, calcBinding.btnTanSecondary, "tan")
     }
 
-    /** Primary (tap) function big below, secondary (hold) function small above. */
-    private fun trigLabel(base: String) = if (hypActive) {
-        twoLineLabel("${base}h⁻¹", "${base}h")
-    } else {
-        twoLineLabel("$base⁻¹", base)
-    }
-
-    private fun twoLineLabel(secondary: String, primary: String): CharSequence {
-        val text = "$secondary\n$primary"
-        return SpannableString(text).apply {
-            setSpan(RelativeSizeSpan(0.6f), 0, secondary.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    /** Primary (tap) function, secondary (hold) function. */
+    private fun setTrigLabels(primaryView: TextView, secondaryView: TextView, base: String) {
+        if (hypActive) {
+            primaryView.text = "${base}h"
+            secondaryView.text = "${base}h⁻¹"
+        } else {
+            primaryView.text = base
+            secondaryView.text = "$base⁻¹"
         }
     }
 

@@ -90,14 +90,24 @@
             android:text="x⇄y"
             android:textSize="18sp" />
 
-        <TextView
+        <FrameLayout
             android:id="@+id/btn_drop"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="drop"
-            android:textSize="18sp" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/btn_drop_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="drop" />
+
+            <TextView
+                android:id="@+id/btn_drop_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="AC" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/btn_chs"
@@ -343,32 +353,62 @@
             android:text="hyp"
             android:textSize="18sp" />
 
-        <TextView
+        <FrameLayout
             android:id="@+id/btn_sin"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="sin"
-            android:textSize="18sp" />
+            android:layout_weight="1">
 
-        <TextView
+            <TextView
+                android:id="@+id/btn_sin_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="sin" />
+
+            <TextView
+                android:id="@+id/btn_sin_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="sin⁻¹" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btn_cos"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="cos"
-            android:textSize="18sp" />
+            android:layout_weight="1">
 
-        <TextView
+            <TextView
+                android:id="@+id/btn_cos_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="cos" />
+
+            <TextView
+                android:id="@+id/btn_cos_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="cos⁻¹" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btn_tan"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="tan"
-            android:textSize="18sp" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/btn_tan_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="tan" />
+
+            <TextView
+                android:id="@+id/btn_tan_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="tan⁻¹" />
+
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -471,6 +511,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="E" />
+
+        <TextView
+            android:id="@+id/btn_blank_exponent"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/btn_0"
