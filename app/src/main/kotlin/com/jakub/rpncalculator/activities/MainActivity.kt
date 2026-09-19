@@ -1,5 +1,6 @@
 package com.jakub.rpncalculator.activities
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -407,9 +408,39 @@ class MainActivity : SimpleActivity(), Calculator {
         dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
         if (registers.isNotEmpty()) {
             dialog.listView.setOnItemLongClickListener { _, _, position, _ ->
-                copyToClipboard(registers[position].second)
+                showCopyPasteChoice(registers[position].second) { dialog.dismiss() }
                 true
             }
+        }
+    }
+
+    private fun showCopyPasteChoice(value: String, onPaste: () -> Unit) {
+        val choiceDialog = AlertDialog.Builder(this)
+            .setItems(arrayOf(getString(org.fossify.commons.R.string.copy), getString(R.string.paste))) { _, which ->
+                if (which == 0) {
+                    copyToClipboard(value)
+                } else {
+                    pasteIntoX()
+                    onPaste()
+                }
+            }
+            .create()
+        choiceDialog.show()
+    }
+
+    private fun pasteIntoX() {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = clipboard.primaryClip
+        val text = if (clip != null && clip.itemCount > 0) {
+            clip.getItemAt(0).coerceToText(this).toString().trim()
+        } else {
+            null
+        }
+        val value = text?.toBigDecimalOrNull()
+        if (value != null) {
+            calc.handleConstant(value)
+        } else {
+            toast(R.string.invalid_number)
         }
     }
 

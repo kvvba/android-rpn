@@ -180,6 +180,8 @@
     <string name="stack_count_format">STACK: %d</string>
     <string name="stack_picker_title">Stack</string>
     <string name="stack_empty">Stack is empty</string>
+    <string name="paste">Paste</string>
+    <string name="invalid_number">Clipboard does not contain a valid number</string>
     <!--
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res

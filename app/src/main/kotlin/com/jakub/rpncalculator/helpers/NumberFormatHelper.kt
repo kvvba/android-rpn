@@ -48,10 +48,15 @@ class NumberFormatHelper(
         }
 
         return when (displayMode) {
-            DisplayMode.NORMAL -> if (bd.scale() >= 0 && plainDigitCount(bd) <= MAX_DISPLAY_DIGITS) {
-                formatPlain(bd)
-            } else {
-                formatScientific(bd)
+            DisplayMode.NORMAL -> {
+                // Only the integer part can't be truncated without changing the value's
+                // magnitude, so that's what decides whether plain form is even an option here.
+                // Fraction digits beyond MAX_FRACTION_DIGITS are fine to silently drop (formatPlain
+                // already does that) *unless* dropping them would erase the value entirely.
+                val integerDigitCount = maxOf(naturalExponent(bd) + 1, 1)
+                val plain = formatPlain(bd)
+                val vanished = plain == "0" || plain == "-0"
+                if (integerDigitCount <= MAX_DISPLAY_DIGITS && !vanished) plain else formatScientific(bd)
             }
 
             DisplayMode.SCIENTIFIC -> formatScientific(bd)
@@ -59,20 +64,11 @@ class NumberFormatHelper(
         }
     }
 
-    /** How many digit characters [bd] would need to be shown in full, untruncated plain form. */
-    private fun plainDigitCount(bd: BigDecimal): Int {
+    /** floor(log10(|bd|)): the power of ten of [bd]'s leading significant digit. */
+    private fun naturalExponent(bd: BigDecimal): Int {
         val stripped = bd.stripTrailingZeros()
         val significantDigits = stripped.unscaledValue().abs().toString().length
-        val exponent = significantDigits - 1 - stripped.scale()
-
-        return if (exponent >= 0) {
-            // Digits before the point, plus any of the significant digits left over after that.
-            maxOf(exponent + 1, significantDigits)
-        } else {
-            // The leading "0", the zeros between the point and the first significant digit, and
-            // the significant digits themselves.
-            1 + (-exponent - 1) + significantDigits
-        }
+        return significantDigits - 1 - stripped.scale()
     }
 
     private fun formatPlain(bd: BigDecimal): String {

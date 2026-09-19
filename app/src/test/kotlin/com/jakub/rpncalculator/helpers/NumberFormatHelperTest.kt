@@ -88,13 +88,34 @@ class NumberFormatHelperTest {
     }
 
     @Test
-    fun `a value entered via scientific notation displays in scientific notation`() {
-        // BigDecimal("123E3") has a negative scale (-3), unlike the equal-valued but
-        // plain-entered BigDecimal("123000") (scale 0) - that distinction is what signals this
-        // was typed via the "E" exponent key, and should stay scientific despite being short.
+    fun `a value entered via scientific notation displays plain once it fits the digit budget`() {
+        // BigDecimal("123E3") has a negative scale (-3), but NORMAL mode no longer treats a
+        // negative scale alone as a request for scientific notation: an arithmetic result (e.g.
+        // an angle conversion) can just as easily normalize to a negative scale, and forcing
+        // scientific notation on it when it plainly fits the digit budget was the actual bug.
         val value = BigDecimal("123E3")
         assertEquals(0, value.compareTo(BigDecimal(123000)))
-        assertEquals("1${sep}23e+5", formatter.bigDecimalToString(value))
+        val expected = listOf("123", "000").joinToString(group)
+        assertEquals(expected, formatter.bigDecimalToString(value))
+    }
+
+    @Test
+    fun `a huge integer part forces scientific notation even with few significant digits`() {
+        // 26 digits before the point: too wide to show plainly, regardless of how the value came
+        // to have that magnitude, e.g. `1e26 + 0.1`.
+        val value = BigDecimal("10000000000000000000000000.1")
+        val result = formatter.bigDecimalToString(value)
+        assertTrue(result.contains("e"))
+    }
+
+    @Test
+    fun `insignificant fraction digits beyond the display budget stay plain`() {
+        // Only the tail end of the fractional part falls past MAX_FRACTION_DIGITS; silently
+        // dropping it (formatPlain already does this) is fine since the integer part - the part
+        // that actually carries the value's magnitude - is untouched and tiny.
+        val value = BigDecimal("10.0000000000000000000000001")
+        val result = formatter.bigDecimalToString(value)
+        assertEquals("10", result)
     }
 
     @Test

@@ -1,20 +1,20 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="512" android:viewportHeight="512">
     <group
         android:name="speed_lines"
-        android:pivotX="131"
-        android:pivotY="401"
-        android:rotation="-45">
-        <path android:pathData="M127,401 h8 v60 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.5" />
-        <path android:pathData="M110,401 h8 v45 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.35" />
-        <path android:pathData="M93,401 h8 v30 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.2" />
+        android:pivotX="81"
+        android:pivotY="351"
+        android:rotation="-16">
+        <path android:pathData="M77,351 h8 v60 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.5" />
+        <path android:pathData="M60,351 h8 v45 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.35" />
+        <path android:pathData="M43,351 h8 v30 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.2" />
     </group>
     <path
-        android:pathData="M211,201 L291,401 L131,401 Z M211,261 L255,371 L167,371 Z"
+        android:pathData="M161,151 L241,351 L81,351 Z M161,211 L205,321 L117,321 Z"
         android:fillColor="#FFFFFFFF"
         android:fillAlpha="0.35"
         android:fillType="evenOdd" />
     <path
-        android:pathData="M256,156 L336,356 L176,356 Z M256,216 L300,326 L212,326 Z"
+        android:pathData="M231,131 L311,331 L151,331 Z M231,191 L275,301 L187,301 Z"
         android:fillColor="#FFFFFFFF"
         android:fillAlpha="0.65"
         android:fillType="evenOdd" />
