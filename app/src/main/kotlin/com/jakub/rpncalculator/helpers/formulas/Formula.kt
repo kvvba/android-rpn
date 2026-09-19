@@ -18,7 +18,7 @@ interface Formula {
             ReynoldsNumberFormula,
             PrandtlNumberFormula,
             CompoundInterestFormula,
-            FlatIncomeTaxFormula,
+            CountryIncomeTaxFormula,
             TipSplitFormula
         )
     }
@@ -33,10 +33,14 @@ interface Formula {
 
     val variables: List<FormulaVariable>
 
+    /** Display names for a mode dropdown shown above the fields; empty means no dropdown. */
+    val modeOptions: List<Int> get() = emptyList()
+
     /**
      * Computes [solveFor] from [known], which holds every other variable's symbol mapped to its
-     * value. Throws [IllegalArgumentException] if the combination can't be solved (e.g. a
-     * variable this formula can't isolate, or a division by zero).
+     * value. [modeIndex] selects among [modeOptions] and is 0 when there is no dropdown. Throws
+     * [IllegalArgumentException] if the combination can't be solved (e.g. a variable this formula
+     * can't isolate, or a division by zero).
      */
-    fun solve(known: Map<String, BigDecimal>, solveFor: String): BigDecimal
+    fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int = 0): BigDecimal
 }

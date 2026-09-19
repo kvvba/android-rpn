@@ -28,7 +28,7 @@ object CompoundInterestFormula : Formula {
         FormulaVariable("t", R.string.formula_var_years)
     )
 
-    override fun solve(known: Map<String, BigDecimal>, solveFor: String): BigDecimal {
+    override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal {
         val n = known["n"] ?: throw IllegalArgumentException("n must always be supplied")
         val growthFactor by lazy {
             BigDecimal.ONE.add(RpnEngine.divide(known["r"]!!, n), MATH_CONTEXT)

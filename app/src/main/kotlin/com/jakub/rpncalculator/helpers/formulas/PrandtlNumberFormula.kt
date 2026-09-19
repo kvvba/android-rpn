@@ -23,7 +23,7 @@ object PrandtlNumberFormula : Formula {
         FormulaVariable("k", R.string.formula_var_thermal_conductivity, R.string.formula_unit_thermal_conductivity)
     )
 
-    override fun solve(known: Map<String, BigDecimal>, solveFor: String): BigDecimal {
+    override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal {
         val cp = known["cp"]
         val mu = known["μ"]
         val k = known["k"]

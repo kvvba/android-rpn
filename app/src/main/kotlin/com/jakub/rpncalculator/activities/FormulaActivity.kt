@@ -1,8 +1,12 @@
 package com.jakub.rpncalculator.activities
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.TextView
 import org.fossify.commons.extensions.copyToClipboard
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.showKeyboard
@@ -49,6 +53,27 @@ class FormulaActivity : SimpleActivity() {
         }
 
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+
+        if (formula.modeOptions.isNotEmpty()) {
+            binding.formulaModeSpinner.visibility = View.VISIBLE
+            val textColor = getProperTextColor()
+            binding.formulaModeSpinner.adapter = object : ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                formula.modeOptions.map { getString(it) }
+            ) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                    super.getView(position, convertView, parent).apply {
+                        (this as TextView).setTextColor(textColor)
+                    }
+
+                override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View =
+                    super.getDropDownView(position, convertView, parent).apply {
+                        (this as TextView).setTextColor(textColor)
+                    }
+            }
+            binding.formulaModeSpinner.setSelection(prefs.getInt(modeKey(), 0))
+        }
         formula.variables.forEach { variable ->
             val row = ItemFormulaVariableBinding.inflate(layoutInflater, binding.formulaVariablesContainer, true)
             val unitSuffix = variable.unitResId?.let { " [${getString(it)}]" }.orEmpty()
@@ -88,11 +113,16 @@ class FormulaActivity : SimpleActivity() {
 
     private fun prefsKey(symbol: String) = "${formula.key}_$symbol"
 
+    private fun modeKey() = "${formula.key}_mode"
+
     private fun persistFields() {
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         prefs.edit().apply {
             for ((symbol, input) in inputsBySymbol) {
                 putString(prefsKey(symbol), input.text.toString())
+            }
+            if (formula.modeOptions.isNotEmpty()) {
+                putInt(modeKey(), binding.formulaModeSpinner.selectedItemPosition)
             }
         }.apply()
     }
@@ -145,7 +175,8 @@ class FormulaActivity : SimpleActivity() {
         }
 
         try {
-            val result = formula.solve(known, blankSymbol)
+            val modeIndex = if (formula.modeOptions.isNotEmpty()) binding.formulaModeSpinner.selectedItemPosition else 0
+            val result = formula.solve(known, blankSymbol, modeIndex)
             inputsBySymbol.getValue(blankSymbol).setText(formatter.bigDecimalToString(result))
         } catch (e: IllegalArgumentException) {
             toast(e.message.orEmpty())

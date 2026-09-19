@@ -22,7 +22,7 @@ object TipSplitFormula : Formula {
         FormulaVariable("PerPerson", R.string.formula_var_per_person)
     )
 
-    override fun solve(known: Map<String, BigDecimal>, solveFor: String): BigDecimal {
+    override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal {
         val bill = known["Bill"]
         val tip = known["Tip"]
         val people = known["People"]

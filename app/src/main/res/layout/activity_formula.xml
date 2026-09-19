@@ -45,6 +45,13 @@
                 android:longClickable="true"
                 tools:text="Re = ρ·v·L / μ" />
 
+            <Spinner
+                android:id="@+id/formula_mode_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal_margin"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/formula_variables_container"
                 android:layout_width="match_parent"

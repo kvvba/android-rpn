@@ -24,7 +24,7 @@ object ReynoldsNumberFormula : Formula {
         FormulaVariable("μ", R.string.formula_var_dynamic_viscosity, R.string.formula_unit_pascal_second)
     )
 
-    override fun solve(known: Map<String, BigDecimal>, solveFor: String): BigDecimal {
+    override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal {
         val rho = known["ρ"]
         val v = known["v"]
         val length = known["L"]

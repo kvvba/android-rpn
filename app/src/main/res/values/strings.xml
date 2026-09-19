@@ -35,11 +35,16 @@
     <string name="formula_var_compounds_per_year">Compounds per year</string>
     <string name="formula_var_years">Years</string>
 
-    <string name="formula_income_tax">Income tax (flat rate)</string>
-    <string name="formula_income_tax_expression">Tax = Income × Rate / 100</string>
+    <string name="formula_income_tax">Income tax</string>
+    <string name="formula_income_tax_expression">Tax = f(Income), by country</string>
     <string name="formula_var_tax">Tax</string>
     <string name="formula_var_income">Income</string>
-    <string name="formula_var_tax_rate">Tax rate</string>
+    <string name="formula_tax_country_us">United States</string>
+    <string name="formula_tax_country_uk">United Kingdom</string>
+    <string name="formula_tax_country_poland">Poland</string>
+    <string name="formula_tax_country_hungary">Hungary</string>
+    <string name="formula_tax_country_germany">Germany</string>
+    <string name="formula_tax_country_france">France</string>
 
     <string name="formula_tip_split">Tip &amp; bill split</string>
     <string name="formula_tip_split_expression">PerPerson = Bill × (1 + Tip / 100) / People</string>
