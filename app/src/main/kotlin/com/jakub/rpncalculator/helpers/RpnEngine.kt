@@ -169,6 +169,13 @@ class RpnEngine {
 
         fun square(a: BigDecimal): BigDecimal = a.multiply(a, MATH_CONTEXT)
 
+        fun inverse(a: BigDecimal): BigDecimal = divide(BigDecimal.ONE, a)
+
+        fun exp(a: BigDecimal): BigDecimal = power(E, a)
+
+        fun log10(a: BigDecimal): BigDecimal =
+            evaluateExpression("LOG10(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
+
         fun percent(a: BigDecimal): BigDecimal = a.divide(BigDecimal(100), MATH_CONTEXT)
 
         fun negate(a: BigDecimal): BigDecimal = a.negate()

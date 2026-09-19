@@ -40,9 +40,12 @@ import com.jakub.rpncalculator.helpers.CalculatorImpl
 import com.jakub.rpncalculator.helpers.COS
 import com.jakub.rpncalculator.helpers.COSH
 import com.jakub.rpncalculator.helpers.DIVIDE
+import com.jakub.rpncalculator.helpers.EXP
 import com.jakub.rpncalculator.helpers.HistoryHelper
+import com.jakub.rpncalculator.helpers.INVERSE
 import com.jakub.rpncalculator.helpers.LN
 import com.jakub.rpncalculator.helpers.LOG
+import com.jakub.rpncalculator.helpers.LOG10
 import com.jakub.rpncalculator.helpers.MINUS
 import com.jakub.rpncalculator.helpers.MULTIPLY
 import com.jakub.rpncalculator.helpers.NCR
@@ -50,6 +53,7 @@ import com.jakub.rpncalculator.helpers.NPR
 import com.jakub.rpncalculator.helpers.PERCENT
 import com.jakub.rpncalculator.helpers.PLUS
 import com.jakub.rpncalculator.helpers.POWER
+import com.jakub.rpncalculator.helpers.POWER10
 import com.jakub.rpncalculator.helpers.ROOT
 import com.jakub.rpncalculator.helpers.RpnEngine
 import com.jakub.rpncalculator.helpers.SIN
@@ -93,9 +97,12 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnMinus.setOnClickOperation(MINUS)
         calcBinding.btnMultiply.setOnClickOperation(MULTIPLY)
         calcBinding.btnDivide.setOnClickOperation(DIVIDE)
-        calcBinding.btnPercent.setOnClickOperation(PERCENT)
-        calcBinding.btnPower.setOnClickOperation(POWER)
-        calcBinding.btnRoot.setOnClickOperation(ROOT)
+        calcBinding.btnPercent.setVibratingOnClickListener { calc.handleOperation(PERCENT) }
+        calcBinding.btnPercent.setVibratingOnLongClickListener { calc.handleOperation(INVERSE) }
+        calcBinding.btnPower.setVibratingOnClickListener { calc.handleOperation(POWER) }
+        calcBinding.btnPower.setVibratingOnLongClickListener { calc.handleOperation(XTH_ROOT) }
+        calcBinding.btnRoot.setVibratingOnClickListener { calc.handleOperation(ROOT) }
+        calcBinding.btnRoot.setVibratingOnLongClickListener { calc.handleOperation(SQUARE) }
         calcBinding.btnEnter.setVibratingOnClickListener { calc.handleEnter() }
         calcBinding.btnUndo.setVibratingOnClickListener { calc.handleUndo() }
         calcBinding.btnRollUp.setVibratingOnClickListener { calc.handleRollUp() }
@@ -110,7 +117,10 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnPi.setVibratingOnClickListener { calc.handleConstant(RpnEngine.PI) }
         calcBinding.btnE.setVibratingOnClickListener { calc.handleConstant(RpnEngine.E) }
         calcBinding.btnLog.setOnClickOperation(LOG)
-        calcBinding.btnLn.setOnClickOperation(LN)
+        calcBinding.btnLn.setVibratingOnClickListener { calc.handleOperation(LN) }
+        calcBinding.btnLn.setVibratingOnLongClickListener { calc.handleOperation(EXP) }
+        calcBinding.btnLog10.setVibratingOnClickListener { calc.handleOperation(LOG10) }
+        calcBinding.btnLog10.setVibratingOnLongClickListener { calc.handleOperation(POWER10) }
         calcBinding.btnHyp.setVibratingOnClickListener { toggleHyp() }
         calcBinding.btnSin.setVibratingOnClickListener {
             calc.handleOperation(if (hypActive) SINH else SIN)
@@ -130,10 +140,8 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnTan.setVibratingOnLongClickListener {
             calc.handleOperation(if (hypActive) ATANH else ATAN)
         }
-        calcBinding.btnSquare.setOnClickOperation(SQUARE)
         calcBinding.btnNpr.setOnClickOperation(NPR)
         calcBinding.btnNcr.setOnClickOperation(NCR)
-        calcBinding.btnXthroot.setOnClickOperation(XTH_ROOT)
         calcBinding.btnExponent.setVibratingOnClickListener { calc.handleExponent() }
         calcBinding.btnMemoryClear.setVibratingOnClickListener { calc.handleMemoryClear() }
         calcBinding.btnMemoryRecall.setVibratingOnClickListener { calc.handleMemoryRecall() }
@@ -185,8 +193,8 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace,
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal, btnExponent,
                 btnRollUp, btnRollDown, btnUndo,
-                btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnSquare,
-                btnNpr, btnNcr, btnXthroot,
+                btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnLog10,
+                btnNpr, btnNcr, btnBlankRowBlank,
                 btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
                 btnBlankZero, btnBlankDecimal, btnBlankExponent
             ).forEach {

@@ -252,6 +252,25 @@ class RpnEngineTest {
     }
 
     @Test
+    fun `inverse computes 1 over x`() {
+        assertEquals(0, BigDecimal("0.25").compareTo(RpnEngine.inverse(BigDecimal(4))))
+    }
+
+    @Test
+    fun `exp is the inverse of ln`() {
+        val tolerance = BigDecimal("1e-10")
+        assertTrue(RpnEngine.exp(BigDecimal.ONE).subtract(RpnEngine.E).abs() < tolerance)
+        assertTrue(RpnEngine.ln(RpnEngine.exp(BigDecimal(2))).subtract(BigDecimal(2)).abs() < tolerance)
+    }
+
+    @Test
+    fun `log10 is base-10 logarithm`() {
+        val tolerance = BigDecimal("1e-10")
+        assertTrue(RpnEngine.log10(BigDecimal(100)).subtract(BigDecimal(2)).abs() < tolerance)
+        assertTrue(RpnEngine.log10(BigDecimal(1000)).subtract(BigDecimal(3)).abs() < tolerance)
+    }
+
+    @Test
     fun `nPr counts ordered arrangements`() {
         assertEquals(0, BigDecimal(20).compareTo(RpnEngine.nPr(BigDecimal(5), BigDecimal(2))))
         assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.nPr(BigDecimal(5), BigDecimal.ZERO)))

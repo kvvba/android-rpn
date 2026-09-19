@@ -134,29 +134,62 @@
         android:layout_weight="2"
         android:orientation="horizontal">
 
-        <TextView
+        <FrameLayout
             android:id="@+id/btn_percent"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="%" />
+            android:layout_weight="1">
 
-        <TextView
+            <TextView
+                android:id="@+id/btn_percent_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="%" />
+
+            <TextView
+                android:id="@+id/btn_percent_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="1/x" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btn_power"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="^" />
+            android:layout_weight="1">
 
-        <TextView
+            <TextView
+                android:id="@+id/btn_power_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="yˣ" />
+
+            <TextView
+                android:id="@+id/btn_power_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="ˣ√ʸ" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btn_root"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="√" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/btn_root_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="√" />
+
+            <TextView
+                android:id="@+id/btn_root_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="x²" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/btn_divide"
@@ -281,17 +314,27 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="log"
-            android:textSize="18sp" />
+            android:text="logₓ(y)"
+            android:textSize="14sp" />
 
-        <TextView
+        <FrameLayout
             android:id="@+id/btn_ln"
-            style="@style/MyButton"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="ln"
-            android:textSize="18sp" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/btn_ln_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:text="ln" />
+
+            <TextView
+                android:id="@+id/btn_ln_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="eˣ" />
+
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -461,13 +504,25 @@
         android:orientation="horizontal"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/btn_square"
-            style="@style/MyButton"
+        <FrameLayout
+            android:id="@+id/btn_log10"
+            style="@style/MyTwoTierButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="x²" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/btn_log10_primary"
+                style="@style/MyTwoTierButtonPrimary"
+                android:textSize="16sp"
+                android:text="log10" />
+
+            <TextView
+                android:id="@+id/btn_log10_secondary"
+                style="@style/MyTwoTierButtonSecondary"
+                android:text="10ˣ" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/btn_npr"
@@ -488,13 +543,11 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/btn_xthroot"
+            android:id="@+id/btn_blank_row_blank"
             style="@style/MyButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="ˣ√ʸ"
-            android:textSize="18sp" />
+            android:layout_weight="1" />
 
     </LinearLayout>
 

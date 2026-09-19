@@ -12,7 +12,7 @@ import java.math.BigDecimal
 private const val MAX_UNDO_HISTORY = 100
 
 private val NAMED_UNARY_FUNCTIONS = setOf(
-    SIN, COS, TAN, ASIN, ACOS, ATAN, SINH, COSH, TANH, ASINH, ACOSH, ATANH, LN
+    SIN, COS, TAN, ASIN, ACOS, ATAN, SINH, COSH, TANH, ASINH, ACOSH, ATANH, LN, LOG10
 )
 
 private data class CalculatorSnapshot(
@@ -246,12 +246,22 @@ class CalculatorImpl(
     fun handleChs() {
         pushHistory()
         if (entryActive) {
-            entry = if (entry.startsWith("-")) entry.substring(1) else "-$entry"
+            // Once an exponent has been typed, +/- negates the exponent rather than the
+            // significand, matching where the user is actively typing.
+            val exponentIndex = entry.indexOf("E")
+            entry = if (exponentIndex == -1) {
+                negateLeadingSign(entry)
+            } else {
+                entry.substring(0, exponentIndex + 1) + negateLeadingSign(entry.substring(exponentIndex + 1))
+            }
         } else {
             engine.dropTop()?.let { engine.push(RpnEngine.negate(it)) }
         }
         refreshDisplay()
     }
+
+    private fun negateLeadingSign(text: String): String =
+        if (text.startsWith("-")) text.substring(1) else "-$text"
 
     fun handleBackspace() {
         if (!entryActive) {
@@ -294,10 +304,11 @@ class CalculatorImpl(
             val outcome = engine.applyUnary(unaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (operand != null) {
-                    val formula = if (isNamedFunction(operation)) {
-                        "${symbolFor(operation)}(${operand.format()})"
-                    } else {
-                        "${operand.format()}${symbolFor(operation)}"
+                    val formula = when {
+                        operation == EXP -> "e^${operand.format()}"
+                        operation == POWER10 -> "10^${operand.format()}"
+                        isNamedFunction(operation) -> "${symbolFor(operation)}(${operand.format()})"
+                        else -> "${operand.format()}${symbolFor(operation)}"
                     }
                     recordHistory(formula, result.format())
                 }
@@ -327,7 +338,8 @@ class CalculatorImpl(
     }
 
     private fun isUnary(operation: String) = operation == ROOT || operation == PERCENT ||
-        operation == SQUARE || isNamedFunction(operation)
+        operation == SQUARE || operation == INVERSE || operation == EXP || operation == POWER10 ||
+        isNamedFunction(operation)
 
     private fun isNamedFunction(operation: String) = operation in NAMED_UNARY_FUNCTIONS
 
@@ -347,6 +359,10 @@ class CalculatorImpl(
         ACOSH -> RpnEngine.Companion::acosh
         ATANH -> RpnEngine.Companion::atanh
         LN -> RpnEngine.Companion::ln
+        INVERSE -> RpnEngine.Companion::inverse
+        EXP -> RpnEngine.Companion::exp
+        LOG10 -> RpnEngine.Companion::log10
+        POWER10 -> { a -> RpnEngine.power(BigDecimal.TEN, a) }
         else -> RpnEngine.Companion::percent
     }
 
@@ -387,6 +403,8 @@ class CalculatorImpl(
         NPR -> "nPr"
         NCR -> "nCr"
         XTH_ROOT -> "√"
+        INVERSE -> "⁻¹"
+        LOG10 -> "log10"
         else -> "%"
     }
 
