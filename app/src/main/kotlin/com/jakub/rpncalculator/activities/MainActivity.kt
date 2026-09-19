@@ -152,7 +152,10 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnMod.setVibratingOnClickListener { calc.handleOperation(MODULUS) }
         calcBinding.btnMod.setVibratingOnLongClickListener { calc.handleOperation(QUOTIENT) }
         calcBinding.btnExponent.setVibratingOnClickListener { calc.handleExponent() }
-        calcBinding.btnExponent.setVibratingOnLongClickListener { calc.handleShiftEngineeringDown() }
+        calcBinding.btnExponent.setVibratingOnLongClickListener {
+            calc.handleShiftEngineeringDown()
+            updateDisplayModeIndicator()
+        }
         calcBinding.btn7.setVibratingOnLongClickListener { calc.handleOperation(FACTORIAL) }
         calcBinding.btn8.setVibratingOnLongClickListener { calc.handleOperation(NCR) }
         calcBinding.btn9.setVibratingOnLongClickListener { calc.handleOperation(NPR) }
@@ -188,7 +191,10 @@ class MainActivity : SimpleActivity(), Calculator {
                 calc.numpadClicked(view.id)
             }
         }
-        calcBinding.btn0.setVibratingOnLongClickListener { calc.handleShiftEngineeringUp() }
+        calcBinding.btn0.setVibratingOnLongClickListener {
+            calc.handleShiftEngineeringUp()
+            updateDisplayModeIndicator()
+        }
 
         calcBinding.formula.setOnLongClickListener { copyToClipboard(false) }
         calcBinding.result.setOnLongClickListener { copyToClipboard(true) }
@@ -254,11 +260,15 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun updateSecondLayerVisibility() {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
+        // Rows with no dedicated 2nd-layer content go INVISIBLE rather than GONE, so the row
+        // keeps its space and the total row count (and therefore button size) stays the same
+        // whichever layer is active.
+        val blankOnSecondLayer = if (secondLayerActive) View.INVISIBLE else View.VISIBLE
         calcBinding.apply {
-            rowOperators.visibility = firstLayerVisibility
+            rowOperators.visibility = blankOnSecondLayer
             row789.visibility = firstLayerVisibility
             row456.visibility = firstLayerVisibility
-            row123.visibility = firstLayerVisibility
+            row123.visibility = blankOnSecondLayer
             btn0.visibility = firstLayerVisibility
             btnDecimal.visibility = firstLayerVisibility
             btnExponent.visibility = firstLayerVisibility
@@ -382,7 +392,8 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     private fun showStackPicker() {
-        val registers = calc.stackSnapshot()
+        // Shown bottom-up like a physical RPN stack display, with X on the last line.
+        val registers = calc.stackSnapshot().asReversed()
         val lines = if (registers.isEmpty()) {
             arrayOf(getString(R.string.stack_empty))
         } else {

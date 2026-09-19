@@ -232,8 +232,8 @@ class CalculatorImpl(
     private fun handleLoadValue(value: BigDecimal) {
         pushHistory()
         ensureEntryPushed()
-        entry = value.toPlainString()
-        entryActive = true
+        engine.push(value)
+        entryActive = false
         refreshDisplay()
     }
 
@@ -307,7 +307,8 @@ class CalculatorImpl(
     /** Shifts the engineering exponent down (toward, and past, the natural grouping); unbounded. */
     fun handleShiftEngineeringDown() {
         if (displayMode != DisplayMode.ENGINEERING) {
-            return
+            displayMode = DisplayMode.ENGINEERING
+            engineeringShift = 0
         }
         engineeringShift -= 3
         refreshDisplay()
@@ -316,7 +317,8 @@ class CalculatorImpl(
     /** Shifts the engineering exponent up by another multiple of 3; unbounded. */
     fun handleShiftEngineeringUp() {
         if (displayMode != DisplayMode.ENGINEERING) {
-            return
+            displayMode = DisplayMode.ENGINEERING
+            engineeringShift = 0
         }
         engineeringShift += 3
         refreshDisplay()

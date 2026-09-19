@@ -9,14 +9,14 @@
         <path android:pathData="M93,401 h8 v30 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.2" />
     </group>
     <path
-        android:pathData="M131,201 h160 v30 h-160 z M146,231 h30 v170 h-30 z M246,231 h30 v170 h-30 z"
+        android:pathData="M131,201 L291,201 L186,301 L291,401 L131,401 Z"
         android:fillColor="#FFFFFFFF"
         android:fillAlpha="0.35" />
     <path
-        android:pathData="M176,156 h160 v30 h-160 z M191,186 h30 v170 h-30 z M291,186 h30 v170 h-30 z"
+        android:pathData="M176,156 L336,156 L231,256 L336,356 L176,356 Z"
         android:fillColor="#FFFFFFFF"
         android:fillAlpha="0.65" />
     <path
-        android:pathData="M221,111 h160 v30 h-160 z M236,141 h30 v170 h-30 z M336,141 h30 v170 h-30 z"
+        android:pathData="M221,111 L381,111 L276,211 L381,311 L221,311 Z"
         android:fillColor="#FFFFFFFF" />
 </vector>
