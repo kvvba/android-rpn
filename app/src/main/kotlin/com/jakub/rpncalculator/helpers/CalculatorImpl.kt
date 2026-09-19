@@ -327,8 +327,9 @@ class CalculatorImpl(
         if (displayMode != DisplayMode.ENGINEERING) {
             displayMode = DisplayMode.ENGINEERING
             engineeringShift = 0
+        } else {
+            engineeringShift += 3
         }
-        engineeringShift += 3
         refreshDisplay()
     }
 
@@ -337,8 +338,9 @@ class CalculatorImpl(
         if (displayMode != DisplayMode.ENGINEERING) {
             displayMode = DisplayMode.ENGINEERING
             engineeringShift = 0
+        } else {
+            engineeringShift -= 3
         }
-        engineeringShift -= 3
         refreshDisplay()
     }
 

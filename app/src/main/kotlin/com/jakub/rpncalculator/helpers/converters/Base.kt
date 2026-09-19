@@ -19,7 +19,12 @@ interface Converter {
             EnergyConverter,
             PowerConverter,
             FuelConsumptionConverter,
-            DataSizeConverter
+            DataSizeConverter,
+            DensityConverter,
+            FlowRateConverter,
+            CookingConverter,
+            TorqueConverter,
+            LightingConverter
         )
     }
 

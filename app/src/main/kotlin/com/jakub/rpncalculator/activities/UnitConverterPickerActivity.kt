@@ -3,9 +3,9 @@ package com.jakub.rpncalculator.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.recyclerview.widget.GridLayoutManager
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.views.AutoGridLayoutManager
 import com.jakub.rpncalculator.R
 import com.jakub.rpncalculator.adapters.UnitTypesAdapter
 import com.jakub.rpncalculator.databinding.ActivityUnitConverterPickerBinding
@@ -24,8 +24,7 @@ class UnitConverterPickerActivity : SimpleActivity() {
             binding.unitConverterPickerAppbar
         )
 
-        binding.unitTypesGrid.layoutManager =
-            AutoGridLayoutManager(this, resources.getDimensionPixelSize(R.dimen.unit_type_size))
+        binding.unitTypesGrid.layoutManager = GridLayoutManager(this, 2)
         binding.unitTypesGrid.adapter = UnitTypesAdapter(this, Converter.ALL) {
             Intent(this, UnitConverterActivity::class.java).apply {
                 putExtra(UnitConverterActivity.EXTRA_CONVERTER_ID, it)

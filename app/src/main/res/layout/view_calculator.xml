@@ -692,7 +692,7 @@
                 android:id="@+id/btn_exponent_secondary"
                 style="@style/MyTwoTierButtonSecondary"
                 android:textStyle="bold"
-                android:text="ENG➞" />
+                android:text="«ENG" />
 
         </FrameLayout>
 
@@ -720,7 +720,7 @@
                 android:id="@+id/btn_0_secondary"
                 style="@style/MyTwoTierButtonSecondary"
                 android:textStyle="bold"
-                android:text="ENG➞" />
+                android:text="ENG»" />
 
         </FrameLayout>
 

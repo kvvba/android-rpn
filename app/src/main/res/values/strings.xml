@@ -174,6 +174,60 @@
     <string name="unit_data_size_terabyte">Terabyte</string>
     <string name="unit_data_size_tebibyte">Tebibyte</string>
 
+    <string name="unit_density">Density</string>
+    <string name="unit_density_kg_per_cubic_meter">Kilogram per cubic meter</string>
+    <string name="unit_density_gram_per_liter">Gram per liter</string>
+    <string name="unit_density_gram_per_cubic_centimeter">Gram per cubic centimeter</string>
+    <string name="unit_density_kg_per_liter">Kilogram per liter</string>
+    <string name="unit_density_pound_per_cubic_foot">Pound per cubic foot</string>
+    <string name="unit_density_pound_per_cubic_inch">Pound per cubic inch</string>
+    <string name="unit_density_pound_per_gallon_us">Pound per gallon (US)</string>
+
+    <string name="unit_flow_rate">Flow rate</string>
+    <string name="unit_flow_rate_liter_per_second">Liter per second</string>
+    <string name="unit_flow_rate_liter_per_minute">Liter per minute</string>
+    <string name="unit_flow_rate_liter_per_hour">Liter per hour</string>
+    <string name="unit_flow_rate_cubic_meter_per_hour">Cubic meter per hour</string>
+    <string name="unit_flow_rate_cubic_meter_per_second">Cubic meter per second</string>
+    <string name="unit_flow_rate_gallon_us_per_minute">Gallon (US) per minute</string>
+    <string name="unit_flow_rate_cubic_foot_per_minute">Cubic foot per minute</string>
+
+    <string name="unit_cooking">Cooking</string>
+    <string name="unit_cooking_pinch">Pinch</string>
+    <string name="unit_cooking_dash">Dash</string>
+    <string name="unit_cooking_teaspoon_us">Teaspoon (US)</string>
+    <string name="unit_cooking_tablespoon_us">Tablespoon (US)</string>
+    <string name="unit_cooking_fluid_ounce_us">Fluid ounce (US)</string>
+    <string name="unit_cooking_cup_us">Cup (US)</string>
+    <string name="unit_cooking_pint_us">Pint (US)</string>
+    <string name="unit_cooking_quart_us">Quart (US)</string>
+    <string name="unit_cooking_gallon_us">Gallon (US)</string>
+    <string name="unit_cooking_milliliter">Milliliter</string>
+    <string name="unit_cooking_liter">Liter</string>
+    <string name="unit_cooking_teaspoon_uk">Teaspoon (UK)</string>
+    <string name="unit_cooking_dessertspoon_uk">Dessertspoon (UK)</string>
+    <string name="unit_cooking_tablespoon_uk">Tablespoon (UK)</string>
+    <string name="unit_cooking_fluid_ounce_uk">Fluid ounce (UK)</string>
+    <string name="unit_cooking_pint_uk">Pint (UK)</string>
+    <string name="unit_cooking_gallon_uk">Gallon (UK)</string>
+    <string name="unit_cooking_teaspoon_metric">Teaspoon (metric)</string>
+    <string name="unit_cooking_tablespoon_metric">Tablespoon (metric)</string>
+    <string name="unit_cooking_cup_metric">Cup (metric)</string>
+
+    <string name="unit_torque">Torque</string>
+    <string name="unit_torque_newton_meter">Newton-meter</string>
+    <string name="unit_torque_newton_centimeter">Newton-centimeter</string>
+    <string name="unit_torque_kilogram_force_meter">Kilogram-force-meter</string>
+    <string name="unit_torque_pound_force_foot">Pound-force-foot</string>
+    <string name="unit_torque_pound_force_inch">Pound-force-inch</string>
+    <string name="unit_torque_ounce_force_inch">Ounce-force-inch</string>
+
+    <string name="unit_lighting">Lighting</string>
+    <string name="unit_lighting_lux">Lux</string>
+    <string name="unit_lighting_kilolux">Kilolux</string>
+    <string name="unit_lighting_foot_candle">Foot-candle</string>
+    <string name="unit_lighting_phot">Phot</string>
+
     <!-- About -->
     <string name="about_fork_notice">This app is a fork of Fossify Calculator (https://github.com/FossifyOrg/Calculator), adapted to use Reverse Polish Notation.</string>
     <string name="constants_picker_title">Insert constant</string>

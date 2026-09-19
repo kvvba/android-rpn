@@ -145,4 +145,53 @@
     <string name="unit_data_size_gibibyte_symbol">GiB</string>
     <string name="unit_data_size_terabyte_symbol">TB</string>
     <string name="unit_data_size_tebibyte_symbol">TiB</string>
+
+    <string name="unit_density_kg_per_cubic_meter_symbol">kg/m³</string>
+    <string name="unit_density_gram_per_liter_symbol">g/L</string>
+    <string name="unit_density_gram_per_cubic_centimeter_symbol">g/cm³</string>
+    <string name="unit_density_kg_per_liter_symbol">kg/L</string>
+    <string name="unit_density_pound_per_cubic_foot_symbol">lb/ft³</string>
+    <string name="unit_density_pound_per_cubic_inch_symbol">lb/in³</string>
+    <string name="unit_density_pound_per_gallon_us_symbol">lb/gal</string>
+
+    <string name="unit_flow_rate_liter_per_second_symbol">L/s</string>
+    <string name="unit_flow_rate_liter_per_minute_symbol">L/min</string>
+    <string name="unit_flow_rate_liter_per_hour_symbol">L/h</string>
+    <string name="unit_flow_rate_cubic_meter_per_hour_symbol">m³/h</string>
+    <string name="unit_flow_rate_cubic_meter_per_second_symbol">m³/s</string>
+    <string name="unit_flow_rate_gallon_us_per_minute_symbol">gal/min</string>
+    <string name="unit_flow_rate_cubic_foot_per_minute_symbol">ft³/min</string>
+
+    <string name="unit_cooking_pinch_symbol">pinch</string>
+    <string name="unit_cooking_dash_symbol">dash</string>
+    <string name="unit_cooking_teaspoon_us_symbol">tsp</string>
+    <string name="unit_cooking_tablespoon_us_symbol">tbsp</string>
+    <string name="unit_cooking_fluid_ounce_us_symbol">fl oz</string>
+    <string name="unit_cooking_cup_us_symbol">cup</string>
+    <string name="unit_cooking_pint_us_symbol">pt</string>
+    <string name="unit_cooking_quart_us_symbol">qt</string>
+    <string name="unit_cooking_gallon_us_symbol">gal</string>
+    <string name="unit_cooking_milliliter_symbol">mL</string>
+    <string name="unit_cooking_liter_symbol">L</string>
+    <string name="unit_cooking_teaspoon_uk_symbol">tsp</string>
+    <string name="unit_cooking_dessertspoon_uk_symbol">dsp</string>
+    <string name="unit_cooking_tablespoon_uk_symbol">tbsp</string>
+    <string name="unit_cooking_fluid_ounce_uk_symbol">fl oz</string>
+    <string name="unit_cooking_pint_uk_symbol">pt</string>
+    <string name="unit_cooking_gallon_uk_symbol">gal</string>
+    <string name="unit_cooking_teaspoon_metric_symbol">tsp</string>
+    <string name="unit_cooking_tablespoon_metric_symbol">tbsp</string>
+    <string name="unit_cooking_cup_metric_symbol">cup</string>
+
+    <string name="unit_torque_newton_meter_symbol">N·m</string>
+    <string name="unit_torque_newton_centimeter_symbol">N·cm</string>
+    <string name="unit_torque_kilogram_force_meter_symbol">kgf·m</string>
+    <string name="unit_torque_pound_force_foot_symbol">lbf·ft</string>
+    <string name="unit_torque_pound_force_inch_symbol">lbf·in</string>
+    <string name="unit_torque_ounce_force_inch_symbol">ozf·in</string>
+
+    <string name="unit_lighting_lux_symbol">lx</string>
+    <string name="unit_lighting_kilolux_symbol">klx</string>
+    <string name="unit_lighting_foot_candle_symbol">fc</string>
+    <string name="unit_lighting_phot_symbol">ph</string>
 </resources>

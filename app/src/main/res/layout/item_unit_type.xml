@@ -7,27 +7,28 @@
     android:layout_gravity="center"
     android:layout_margin="@dimen/small_margin"
     android:background="@drawable/unit_type_background"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="@dimen/normal_margin">
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/normal_margin"
+    android:paddingEnd="@dimen/normal_margin">
 
     <ImageView
         android:id="@+id/unit_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_width="@dimen/unit_type_icon_size"
+        android:layout_height="@dimen/unit_type_icon_size"
         android:importantForAccessibility="no"
-        android:padding="@dimen/normal_margin"
         tools:src="@drawable/ic_thermostat_vector"
         tools:tint="@color/color_primary" />
 
     <TextView
         android:id="@+id/unit_label"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/normal_margin"
+        android:layout_weight="1"
         android:singleLine="true"
-        android:textAlignment="center"
+        android:ellipsize="end"
+        android:textAlignment="viewStart"
         tools:text="Temperature" />
 
 </LinearLayout>
