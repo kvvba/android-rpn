@@ -3,6 +3,7 @@
     <string name="app_launcher_name">Calculator</string>
     <string name="scientific_calculator">Scientific Calculator</string>
     <string name="unit_converter">Unit converter</string>
+    <string name="tools_title">Tools</string>
     <string name="formulae">Formulae</string>
     <string name="formula_fill_all_but_one">Fill in all fields except the one you want to calculate</string>
     <string name="formula_invalid_number">%1$s is not a valid number</string>
@@ -172,6 +173,7 @@
     <string name="unit_pressure">Pressure</string>
     <string name="unit_pressure_pascal">Pascal</string>
     <string name="unit_pressure_kilopascal">Kilopascal</string>
+    <string name="unit_pressure_hectopascal">Hectopascal</string>
     <string name="unit_pressure_megapascal">Megapascal</string>
     <string name="unit_pressure_bar">Bar</string>
     <string name="unit_pressure_millibar">Millibar</string>

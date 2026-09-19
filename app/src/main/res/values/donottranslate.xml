@@ -97,6 +97,7 @@
 
     <string name="unit_pressure_pascal_symbol">Pa</string>
     <string name="unit_pressure_kilopascal_symbol">kPa</string>
+    <string name="unit_pressure_hectopascal_symbol">hPa</string>
     <string name="unit_pressure_megapascal_symbol">MPa</string>
     <string name="unit_pressure_bar_symbol">bar</string>
     <string name="unit_pressure_millibar_symbol">mbar</string>
@@ -164,24 +165,24 @@
 
     <string name="unit_cooking_pinch_symbol">pinch</string>
     <string name="unit_cooking_dash_symbol">dash</string>
-    <string name="unit_cooking_teaspoon_us_symbol">tsp</string>
-    <string name="unit_cooking_tablespoon_us_symbol">tbsp</string>
-    <string name="unit_cooking_fluid_ounce_us_symbol">fl oz</string>
-    <string name="unit_cooking_cup_us_symbol">cup</string>
-    <string name="unit_cooking_pint_us_symbol">pt</string>
+    <string name="unit_cooking_teaspoon_us_symbol">tsp US</string>
+    <string name="unit_cooking_tablespoon_us_symbol">tbsp US</string>
+    <string name="unit_cooking_fluid_ounce_us_symbol">fl oz US</string>
+    <string name="unit_cooking_cup_us_symbol">cup US</string>
+    <string name="unit_cooking_pint_us_symbol">pt US</string>
     <string name="unit_cooking_quart_us_symbol">qt</string>
-    <string name="unit_cooking_gallon_us_symbol">gal</string>
+    <string name="unit_cooking_gallon_us_symbol">gal US</string>
     <string name="unit_cooking_milliliter_symbol">mL</string>
     <string name="unit_cooking_liter_symbol">L</string>
-    <string name="unit_cooking_teaspoon_uk_symbol">tsp</string>
+    <string name="unit_cooking_teaspoon_uk_symbol">tsp UK</string>
     <string name="unit_cooking_dessertspoon_uk_symbol">dsp</string>
-    <string name="unit_cooking_tablespoon_uk_symbol">tbsp</string>
-    <string name="unit_cooking_fluid_ounce_uk_symbol">fl oz</string>
-    <string name="unit_cooking_pint_uk_symbol">pt</string>
-    <string name="unit_cooking_gallon_uk_symbol">gal</string>
-    <string name="unit_cooking_teaspoon_metric_symbol">tsp</string>
-    <string name="unit_cooking_tablespoon_metric_symbol">tbsp</string>
-    <string name="unit_cooking_cup_metric_symbol">cup</string>
+    <string name="unit_cooking_tablespoon_uk_symbol">tbsp UK</string>
+    <string name="unit_cooking_fluid_ounce_uk_symbol">fl oz UK</string>
+    <string name="unit_cooking_pint_uk_symbol">pt UK</string>
+    <string name="unit_cooking_gallon_uk_symbol">gal UK</string>
+    <string name="unit_cooking_teaspoon_metric_symbol">tsp M</string>
+    <string name="unit_cooking_tablespoon_metric_symbol">tbsp M</string>
+    <string name="unit_cooking_cup_metric_symbol">cup M</string>
 
     <string name="unit_torque_newton_meter_symbol">N·m</string>
     <string name="unit_torque_newton_centimeter_symbol">N·cm</string>

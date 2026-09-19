@@ -21,32 +21,58 @@
             android:background="@color/color_primary"
             app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/converter_formula_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/color_primary">
-
-            <com.google.android.material.tabs.TabItem
-                android:text="@string/unit_converter" />
-
-            <com.google.android.material.tabs.TabItem
-                android:text="@string/formulae" />
-
-        </com.google.android.material.tabs.TabLayout>
-
     </org.fossify.commons.views.MyAppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/unit_types_grid"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/unit_converter_picker_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:itemCount="20"
-        tools:listitem="@layout/item_unit_type" />
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/unit_types_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_margin"
+                android:layout_marginEnd="@dimen/activity_margin"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:itemCount="20"
+                tools:listitem="@layout/item_unit_type" />
+
+            <TextView
+                android:id="@+id/formulas_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/normal_margin"
+                android:paddingStart="@dimen/bigger_margin"
+                android:paddingTop="@dimen/normal_margin"
+                android:paddingEnd="@dimen/bigger_margin"
+                android:paddingBottom="@dimen/small_margin"
+                android:text="@string/formulae"
+                android:textAllCaps="true"
+                android:textSize="@dimen/smaller_text_size"
+                android:textStyle="bold"
+                android:alpha="0.6" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/formulas_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_formula_row" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

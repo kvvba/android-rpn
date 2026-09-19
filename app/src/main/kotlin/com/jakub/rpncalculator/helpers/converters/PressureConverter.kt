@@ -35,6 +35,13 @@ object PressureConverter : Converter {
             key = "Kilopascal"
         )
 
+        data object Hectopascal : Unit(
+            nameResId = R.string.unit_pressure_hectopascal,
+            symbolResId = R.string.unit_pressure_hectopascal_symbol,
+            factor = BigDecimal("100"),
+            key = "Hectopascal"
+        )
+
         data object Megapascal : Unit(
             nameResId = R.string.unit_pressure_megapascal,
             symbolResId = R.string.unit_pressure_megapascal_symbol,
@@ -95,6 +102,7 @@ object PressureConverter : Converter {
     override val units: List<Unit> = listOf(
         Unit.Pascal,
         Unit.Kilopascal,
+        Unit.Hectopascal,
         Unit.Megapascal,
         Unit.Bar,
         Unit.Millibar,

@@ -19,7 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:longClickable="true"
-        android:inputType="numberDecimal|numberSigned"
+        android:inputType="text"
+        android:digits="0123456789.-"
         android:textSize="20sp"
         tools:text="1000" />
 
