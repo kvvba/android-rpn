@@ -83,7 +83,8 @@ class FormulaActivity : SimpleActivity() {
         formula.variables.forEach { variable ->
             val row = ItemFormulaVariableBinding.inflate(layoutInflater, binding.formulaVariablesContainer, true)
             val unitSuffix = variable.unitResId?.let { " [${getString(it)}]" }.orEmpty()
-            row.formulaVariableLabel.text = "${getString(variable.nameResId)} (${variable.symbol})$unitSuffix"
+            val symbolSuffix = if (formula.showExpression) " (${variable.symbol})" else ""
+            row.formulaVariableLabel.text = "${getString(variable.nameResId)}$symbolSuffix$unitSuffix"
             row.formulaVariableInput.setText(prefs.getString(prefsKey(variable.symbol), ""))
             row.formulaVariableInput.setOnLongClickListener {
                 copyToClipboard(row.formulaVariableInput.text.toString())
