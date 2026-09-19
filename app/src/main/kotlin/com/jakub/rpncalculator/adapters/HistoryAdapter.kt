@@ -8,6 +8,7 @@ import org.fossify.commons.extensions.getProperTextColor
 import com.jakub.rpncalculator.activities.SimpleActivity
 import com.jakub.rpncalculator.databinding.HistoryViewBinding
 import com.jakub.rpncalculator.helpers.CalculatorImpl
+import com.jakub.rpncalculator.helpers.NumberFormatHelper
 import com.jakub.rpncalculator.models.History
 
 class HistoryAdapter(
@@ -19,6 +20,7 @@ class HistoryAdapter(
     RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     private var textColor = activity.getProperTextColor()
+    private val formatter = NumberFormatHelper()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(HistoryViewBinding.inflate(activity.layoutInflater, parent, false))
@@ -46,7 +48,7 @@ class HistoryAdapter(
                 }
 
                 setOnLongClickListener {
-                    activity.baseContext.copyToClipboard(item.result)
+                    activity.baseContext.copyToClipboard(formatter.removeThousandsSeparator(item.result))
                     true
                 }
             }

@@ -31,6 +31,7 @@ import com.jakub.rpncalculator.helpers.CONVERTER_VALUE
 import com.jakub.rpncalculator.helpers.NumberFormatHelper
 import com.jakub.rpncalculator.helpers.TOP_UNIT
 import com.jakub.rpncalculator.helpers.converters.Converter
+import com.jakub.rpncalculator.helpers.converters.CurrencyConverter
 import com.jakub.rpncalculator.helpers.converters.TemperatureConverter
 import java.math.BigDecimal
 import kotlin.reflect.KMutableProperty0
@@ -64,11 +65,11 @@ class ConverterView @JvmOverloads constructor(
         binding.topUnitHolder.setClickListenerForUnitSelector(::topUnit, ::bottomUnit)
         binding.bottomUnitHolder.setClickListenerForUnitSelector(::bottomUnit, ::topUnit)
         binding.topUnitHolder.setOnLongClickListener {
-            context.copyToClipboard(binding.topUnitText.text.toString())
+            context.copyToClipboard(formatter.removeThousandsSeparator(binding.topUnitText.text.toString()))
             true
         }
         binding.bottomUnitHolder.setOnLongClickListener {
-            context.copyToClipboard(binding.bottomUnitText.text.toString())
+            context.copyToClipboard(formatter.removeThousandsSeparator(binding.bottomUnitText.text.toString()))
             true
         }
 
@@ -271,7 +272,7 @@ class ConverterView @JvmOverloads constructor(
     private fun updateBottomValue() {
         converter?.apply {
             val rawText = binding.topUnitText.text.toString()
-            val clampedText = checkTemperatureLimits(rawText)
+            val clampedText = checkCurrencyDecimals(checkTemperatureLimits(rawText))
             if (clampedText != rawText) {
                 binding.topUnitText.text = clampedText
             }
@@ -304,12 +305,38 @@ class ConverterView @JvmOverloads constructor(
                 // Reciprocal units (e.g. distance-per-volume) are undefined at zero
                 null
             }
-            binding.bottomUnitText.text = if (converted != null) {
-                formatter.bigDecimalToString(converted)
-            } else {
+            binding.bottomUnitText.text = if (converted == null) {
                 "∞"
+            } else if (key == CurrencyConverter.key) {
+                formatCurrency(converted)
+            } else {
+                formatter.bigDecimalToString(converted)
             }
         }
+    }
+
+    /** Currencies always show cents, e.g. "5.00" rather than "5". */
+    private fun formatCurrency(value: BigDecimal): String {
+        val rounded = value.setScale(2, java.math.RoundingMode.HALF_UP)
+        val symbols = java.text.DecimalFormatSymbols.getInstance().apply {
+            decimalSeparator = this@ConverterView.decimalSeparator.single()
+            groupingSeparator = this@ConverterView.groupingSeparator.single()
+        }
+        return java.text.DecimalFormat("#,##0.00", symbols).format(rounded)
+    }
+
+    /** Caps typed input at 2 decimal digits for currency conversion. */
+    private fun checkCurrencyDecimals(value: String): String {
+        if (converter?.key != CurrencyConverter.key) {
+            return value
+        }
+        val separatorIndex = value.indexOf(decimalSeparator)
+        if (separatorIndex == -1) {
+            return value
+        }
+        val decimalsStart = separatorIndex + decimalSeparator.length
+        val decimalsLength = value.length - decimalsStart
+        return if (decimalsLength > 2) value.substring(0, decimalsStart + 2) else value
     }
 
     private fun <T> KMutableProperty0<T>.swapWith(other: KMutableProperty0<T>) {

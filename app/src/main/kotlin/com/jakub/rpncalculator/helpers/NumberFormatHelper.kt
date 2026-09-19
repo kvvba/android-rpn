@@ -168,6 +168,9 @@ class NumberFormatHelper(
         return str.replace(groupingSeparator, "").replace(decimalSeparator, ".")
     }
 
+    /** Strips only the thousands separator, e.g. for copying "1,000" to the clipboard as "1000". */
+    fun removeThousandsSeparator(str: String): String = str.replace(groupingSeparator, "")
+
     fun formatForDisplay(input: String): String {
         var formatted = addGroupingSeparators(input)
         // allow writing numbers like 0.003

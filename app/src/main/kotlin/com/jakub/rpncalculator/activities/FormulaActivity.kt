@@ -94,7 +94,7 @@ class FormulaActivity : SimpleActivity() {
                 row.formulaVariableInput.filters = arrayOf(twoDecimalInputFilter)
             }
             row.formulaVariableInput.setOnLongClickListener {
-                copyToClipboard(row.formulaVariableInput.text.toString())
+                copyToClipboard(formatter.removeThousandsSeparator(row.formulaVariableInput.text.toString()))
                 true
             }
             row.formulaVariableInput.setOnClickListener {

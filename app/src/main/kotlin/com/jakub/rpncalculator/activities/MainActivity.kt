@@ -432,7 +432,7 @@ class MainActivity : SimpleActivity(), Calculator {
         AlertDialog.Builder(this)
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> copyToClipboard(value)
+                    0 -> copyToClipboard(NumberFormatHelper().removeThousandsSeparator(value))
                     1 -> {
                         pasteIntoX()
                         onHandled()
@@ -518,7 +518,7 @@ class MainActivity : SimpleActivity(), Calculator {
         return if (value.isNullOrEmpty()) {
             false
         } else {
-            copyToClipboard(value)
+            copyToClipboard(NumberFormatHelper().removeThousandsSeparator(value))
             true
         }
     }
