@@ -31,15 +31,18 @@
 
         <activity
             android:name="com.jakub.rpncalculator.activities.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.jakub.rpncalculator.activities.UnitConverterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.jakub.rpncalculator.activities.UnitConverterPickerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name="com.jakub.rpncalculator.activities.WidgetConfigureActivity"

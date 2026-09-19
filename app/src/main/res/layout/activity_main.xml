@@ -32,6 +32,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include
+            android:id="@+id/view_calculator"
             layout="@layout/view_calculator"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

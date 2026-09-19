@@ -59,6 +59,7 @@ class MainActivity : SimpleActivity(), Calculator {
     private lateinit var calc: CalculatorImpl
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
+    private val calcBinding get() = binding.viewCalculator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,7 @@ class MainActivity : SimpleActivity(), Calculator {
         setupOptionsMenu()
         refreshMenuItems()
         setupEdgeToEdge(padBottomSystem = listOf(binding.mainNestedScrollview))
-        setupMaterialScrollListener(binding.mainNestedScrollview, binding.mainAppbar!!)
+        setupMaterialScrollListener(binding.mainNestedScrollview, binding.mainAppbar)
 
         if (savedInstanceState != null) {
             saveCalculatorState = savedInstanceState.getCharSequence(CALCULATOR_STATE) as String
@@ -78,59 +79,59 @@ class MainActivity : SimpleActivity(), Calculator {
             context = applicationContext,
             calculatorState = saveCalculatorState
         )
-        binding.btnPlus?.setOnClickOperation(PLUS)
-        binding.btnMinus?.setOnClickOperation(MINUS)
-        binding.btnMultiply?.setOnClickOperation(MULTIPLY)
-        binding.btnDivide?.setOnClickOperation(DIVIDE)
-        binding.btnPercent?.setOnClickOperation(PERCENT)
-        binding.btnPower?.setOnClickOperation(POWER)
-        binding.btnRoot?.setOnClickOperation(ROOT)
-        binding.btnEnter?.setVibratingOnClickListener { calc.handleEnter() }
-        binding.btnUndo?.setVibratingOnClickListener { calc.handleUndo() }
-        binding.btnRollUp?.setVibratingOnClickListener { calc.handleRollUp() }
-        binding.btnRollDown?.setVibratingOnClickListener { calc.handleRollDown() }
-        binding.btnSwap?.setVibratingOnClickListener { calc.handleSwap() }
-        binding.btnDrop?.setVibratingOnClickListener { calc.handleDrop() }
-        binding.btnChs?.setVibratingOnClickListener { calc.handleChs() }
-        binding.btnBackspace?.setVibratingOnClickListener { calc.handleBackspace() }
-        binding.btnAc?.setVibratingOnClickListener { calc.handleReset() }
+        calcBinding.btnPlus.setOnClickOperation(PLUS)
+        calcBinding.btnMinus.setOnClickOperation(MINUS)
+        calcBinding.btnMultiply.setOnClickOperation(MULTIPLY)
+        calcBinding.btnDivide.setOnClickOperation(DIVIDE)
+        calcBinding.btnPercent.setOnClickOperation(PERCENT)
+        calcBinding.btnPower.setOnClickOperation(POWER)
+        calcBinding.btnRoot.setOnClickOperation(ROOT)
+        calcBinding.btnEnter.setVibratingOnClickListener { calc.handleEnter() }
+        calcBinding.btnUndo.setVibratingOnClickListener { calc.handleUndo() }
+        calcBinding.btnRollUp.setVibratingOnClickListener { calc.handleRollUp() }
+        calcBinding.btnRollDown.setVibratingOnClickListener { calc.handleRollDown() }
+        calcBinding.btnSwap.setVibratingOnClickListener { calc.handleSwap() }
+        calcBinding.btnDrop.setVibratingOnClickListener { calc.handleDrop() }
+        calcBinding.btnChs.setVibratingOnClickListener { calc.handleChs() }
+        calcBinding.btnBackspace.setVibratingOnClickListener { calc.handleBackspace() }
+        calcBinding.btnAc.setVibratingOnClickListener { calc.handleReset() }
 
-        binding.btnSecond?.setVibratingOnClickListener { toggleSecondLayer() }
-        binding.btnPi?.setVibratingOnClickListener { calc.handleConstant(RpnEngine.PI) }
-        binding.btnE?.setVibratingOnClickListener { calc.handleConstant(RpnEngine.E) }
-        binding.btnLog?.setOnClickOperation(LOG)
-        binding.btnLn?.setOnClickOperation(LN)
-        binding.btnSin?.setOnClickOperation(SIN)
-        binding.btnCos?.setOnClickOperation(COS)
-        binding.btnTan?.setOnClickOperation(TAN)
-        binding.btnSquare?.setOnClickOperation(SQUARE)
-        binding.btnMemoryClear?.setVibratingOnClickListener { calc.handleMemoryClear() }
-        binding.btnMemoryRecall?.setVibratingOnClickListener { calc.handleMemoryRecall() }
-        binding.btnMemoryAdd?.setVibratingOnClickListener { calc.handleMemoryAdd() }
-        binding.btnMemorySubtract?.setVibratingOnClickListener { calc.handleMemorySubtract() }
+        calcBinding.btnSecond.setVibratingOnClickListener { toggleSecondLayer() }
+        calcBinding.btnPi.setVibratingOnClickListener { calc.handleConstant(RpnEngine.PI) }
+        calcBinding.btnE.setVibratingOnClickListener { calc.handleConstant(RpnEngine.E) }
+        calcBinding.btnLog.setOnClickOperation(LOG)
+        calcBinding.btnLn.setOnClickOperation(LN)
+        calcBinding.btnSin.setOnClickOperation(SIN)
+        calcBinding.btnCos.setOnClickOperation(COS)
+        calcBinding.btnTan.setOnClickOperation(TAN)
+        calcBinding.btnSquare.setOnClickOperation(SQUARE)
+        calcBinding.btnMemoryClear.setVibratingOnClickListener { calc.handleMemoryClear() }
+        calcBinding.btnMemoryRecall.setVibratingOnClickListener { calc.handleMemoryRecall() }
+        calcBinding.btnMemoryAdd.setVibratingOnClickListener { calc.handleMemoryAdd() }
+        calcBinding.btnMemorySubtract.setVibratingOnClickListener { calc.handleMemorySubtract() }
         updateSecondLayerVisibility()
 
         getButtonIds().forEach {
-            it?.setVibratingOnClickListener { view ->
+            it.setVibratingOnClickListener { view ->
                 calc.numpadClicked(view.id)
             }
         }
 
-        binding.formula?.setOnLongClickListener { copyToClipboard(false) }
-        binding.result?.setOnLongClickListener { copyToClipboard(true) }
-        AutofitHelper.create(binding.result)
+        calcBinding.formula.setOnLongClickListener { copyToClipboard(false) }
+        calcBinding.result.setOnLongClickListener { copyToClipboard(true) }
+        AutofitHelper.create(calcBinding.result)
         storeStateVariables()
-        binding.calculatorHolder?.let { updateViewColors(it, getProperTextColor()) }
+        calcBinding.calculatorHolder.let { updateViewColors(it, getProperTextColor()) }
         setupDecimalButton()
         checkAppOnSDCard()
     }
 
     override fun onResume() {
         super.onResume()
-        setupTopAppBar(binding.mainAppbar!!)
+        setupTopAppBar(binding.mainAppbar)
         setupMaterialScrollListener(binding.mainNestedScrollview, binding.mainAppbar)
         if (storedTextColor != config.textColor) {
-            binding.calculatorHolder?.let { updateViewColors(it, getProperTextColor()) }
+            calcBinding.calculatorHolder.let { updateViewColors(it, getProperTextColor()) }
         }
 
         if (config.preventPhoneFromSleeping) {
@@ -140,7 +141,7 @@ class MainActivity : SimpleActivity(), Calculator {
         setupDecimalButton()
         vibrateOnButtonPress = config.vibrateOnButtonPress
 
-        binding.apply {
+        calcBinding.apply {
             arrayOf(
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace, btnAc,
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal,
@@ -150,20 +151,20 @@ class MainActivity : SimpleActivity(), Calculator {
                 btnBlank1, btnBlank2, btnBlank3, btnBlank4,
                 btnBlankAc, btnBlankZero, btnBlankDecimal
             ).forEach {
-                it?.background = ResourcesCompat.getDrawable(
+                it.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
                 )
-                it?.background?.alpha = MEDIUM_ALPHA_INT
+                it.background?.alpha = MEDIUM_ALPHA_INT
             }
 
             arrayOf(btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9).forEach {
-                it?.background = ResourcesCompat.getDrawable(
+                it.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
                 )
-                it?.background?.alpha = LOWER_ALPHA_INT
+                it.background?.alpha = LOWER_ALPHA_INT
             }
 
-            btnSecond?.background = ResourcesCompat.getDrawable(
+            btnSecond.background = ResourcesCompat.getDrawable(
                 resources, org.fossify.commons.R.drawable.pill_background, theme
             )
         }
@@ -178,28 +179,28 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun updateSecondLayerVisibility() {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
-        binding.apply {
-            rowOperators?.visibility = firstLayerVisibility
-            row789?.visibility = firstLayerVisibility
-            row456?.visibility = firstLayerVisibility
-            row123?.visibility = firstLayerVisibility
-            btnAc?.visibility = firstLayerVisibility
-            btn0?.visibility = firstLayerVisibility
-            btnDecimal?.visibility = firstLayerVisibility
+        calcBinding.apply {
+            rowOperators.visibility = firstLayerVisibility
+            row789.visibility = firstLayerVisibility
+            row456.visibility = firstLayerVisibility
+            row123.visibility = firstLayerVisibility
+            btnAc.visibility = firstLayerVisibility
+            btn0.visibility = firstLayerVisibility
+            btnDecimal.visibility = firstLayerVisibility
 
-            rowMemory?.visibility = secondLayerVisibility
-            rowConstants?.visibility = secondLayerVisibility
-            rowTrig?.visibility = secondLayerVisibility
-            rowBlank?.visibility = secondLayerVisibility
-            btnBlankAc?.visibility = secondLayerVisibility
-            btnBlankZero?.visibility = secondLayerVisibility
-            btnBlankDecimal?.visibility = secondLayerVisibility
+            rowMemory.visibility = secondLayerVisibility
+            rowConstants.visibility = secondLayerVisibility
+            rowTrig.visibility = secondLayerVisibility
+            rowBlank.visibility = secondLayerVisibility
+            btnBlankAc.visibility = secondLayerVisibility
+            btnBlankZero.visibility = secondLayerVisibility
+            btnBlankDecimal.visibility = secondLayerVisibility
         }
         updateSecondLayerToggleVisuals()
     }
 
     private fun updateSecondLayerToggleVisuals() {
-        binding.btnSecond?.background?.alpha = if (secondLayerActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
+        calcBinding.btnSecond.background?.alpha = if (secondLayerActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
     }
 
     override fun onPause() {
@@ -285,6 +286,7 @@ class MainActivity : SimpleActivity(), Calculator {
         val faqItems = arrayListOf(
             FAQItem(R.string.faq_1_title, R.string.faq_1_text),
             FAQItem(R.string.faq_2_title, R.string.faq_2_text),
+            FAQItem(R.string.faq_3_title, R.string.faq_3_text),
             FAQItem(
                 title = org.fossify.commons.R.string.faq_1_title_commons,
                 text = org.fossify.commons.R.string.faq_1_text_commons
@@ -319,14 +321,14 @@ class MainActivity : SimpleActivity(), Calculator {
         )
     }
 
-    private fun getButtonIds() = binding.run {
+    private fun getButtonIds() = calcBinding.run {
         arrayOf(btnDecimal, btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9)
     }
 
     private fun copyToClipboard(copyResult: Boolean): Boolean {
-        var value = binding.formula?.value
+        var value = calcBinding.formula.value
         if (copyResult) {
-            value = binding.result?.value
+            value = calcBinding.result.value
         }
 
         return if (value.isNullOrEmpty()) {
@@ -338,11 +340,11 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     override fun showNewResult(value: String, context: Context) {
-        binding.result?.text = value
+        calcBinding.result.text = value
     }
 
     override fun showNewFormula(value: String, context: Context) {
-        binding.formula?.let { it.text = truncateStackToFit(it, value) }
+        calcBinding.formula.text = truncateStackToFit(calcBinding.formula, value)
     }
 
     /**
@@ -367,7 +369,7 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     private fun setupDecimalButton() {
-        binding.btnDecimal?.text = getDecimalSeparator()
+        calcBinding.btnDecimal.text = getDecimalSeparator()
     }
 
     private fun View.setVibratingOnClickListener(callback: (view: View) -> Unit) {
