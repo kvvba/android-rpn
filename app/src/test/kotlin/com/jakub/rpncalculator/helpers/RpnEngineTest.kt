@@ -209,4 +209,58 @@ class RpnEngineTest {
         assertEquals(BigDecimal(-5), RpnEngine.negate(BigDecimal(5)))
         assertEquals(BigDecimal(5), RpnEngine.negate(BigDecimal(-5)))
     }
+
+    @Test
+    fun `square multiplies a value by itself`() {
+        assertEquals(0, BigDecimal(49).compareTo(RpnEngine.square(BigDecimal(7))))
+    }
+
+    @Test
+    fun `sin cos and tan use degrees`() {
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.sin(BigDecimal(90))))
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.cos(BigDecimal.ZERO)))
+        assertEquals(0, BigDecimal.ZERO.compareTo(RpnEngine.tan(BigDecimal.ZERO)))
+    }
+
+    @Test
+    fun `log10 is base-10 and ln is natural log`() {
+        assertEquals(0, BigDecimal(2).compareTo(RpnEngine.log10(BigDecimal(100))))
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.ln(RpnEngine.E)))
+    }
+
+    @Test
+    fun `pi and e are rounded to the shared math context`() {
+        assertEquals(MATH_CONTEXT.precision, RpnEngine.PI.precision())
+        assertEquals(MATH_CONTEXT.precision, RpnEngine.E.precision())
+        assertTrue(RpnEngine.PI > BigDecimal("3.14") && RpnEngine.PI < BigDecimal("3.15"))
+        assertTrue(RpnEngine.E > BigDecimal("2.71") && RpnEngine.E < BigDecimal("2.72"))
+    }
+
+    @Test
+    fun `memory starts at zero and supports add, subtract, recall and clear`() {
+        assertEquals(0, BigDecimal.ZERO.compareTo(engine.memoryValue()))
+
+        engine.memoryAdd(BigDecimal(5))
+        assertEquals(0, BigDecimal(5).compareTo(engine.memoryValue()))
+
+        engine.memorySubtract(BigDecimal(2))
+        assertEquals(0, BigDecimal(3).compareTo(engine.memoryValue()))
+
+        engine.memoryClear()
+        assertEquals(0, BigDecimal.ZERO.compareTo(engine.memoryValue()))
+    }
+
+    @Test
+    fun `setMemoryValue overwrites memory directly`() {
+        engine.setMemoryValue(BigDecimal(42))
+        assertEquals(0, BigDecimal(42).compareTo(engine.memoryValue()))
+    }
+
+    @Test
+    fun `sqrt of a negative number does not corrupt memory`() {
+        engine.memoryAdd(BigDecimal(9))
+        engine.push(BigDecimal(-9))
+        engine.applyUnary(RpnEngine::sqrt)
+        assertEquals(0, BigDecimal(9).compareTo(engine.memoryValue()))
+    }
 }

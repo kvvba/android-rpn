@@ -40,6 +40,15 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/btn_second"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="2nd"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/btn_undo"
             style="@style/MyButton"
             android:layout_width="0dp"
@@ -149,6 +158,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/row_789"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
@@ -189,6 +199,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/row_456"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
@@ -229,6 +240,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/row_123"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
@@ -265,6 +277,137 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="+" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_constants"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/btn_pi"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="π" />
+
+        <TextView
+            android:id="@+id/btn_e"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="e" />
+
+        <TextView
+            android:id="@+id/btn_log"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="log"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/btn_ln"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="ln"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_trig"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/btn_sin"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="sin"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/btn_cos"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="cos"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/btn_tan"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="tan"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/btn_square"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="x²" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_memory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/btn_memory_clear"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="MC" />
+
+        <TextView
+            android:id="@+id/btn_memory_recall"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="MR" />
+
+        <TextView
+            android:id="@+id/btn_memory_add"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="M+" />
+
+        <TextView
+            android:id="@+id/btn_memory_subtract"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="M-" />
 
     </LinearLayout>
 

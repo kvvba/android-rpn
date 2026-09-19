@@ -14,7 +14,8 @@ private const val MAX_UNDO_HISTORY = 100
 private data class CalculatorSnapshot(
     val stack: List<BigDecimal>,
     val entry: String,
-    val entryActive: Boolean
+    val entryActive: Boolean,
+    val memory: BigDecimal
 )
 
 /**
@@ -60,7 +61,7 @@ class CalculatorImpl(
     }
 
     private fun pushHistory() {
-        undoHistory.addLast(CalculatorSnapshot(engine.snapshot(), entry, entryActive))
+        undoHistory.addLast(CalculatorSnapshot(engine.snapshot(), entry, entryActive, engine.memoryValue()))
         if (undoHistory.size > MAX_UNDO_HISTORY) {
             undoHistory.removeFirst()
         }
@@ -72,6 +73,7 @@ class CalculatorImpl(
         previous.stack.forEach { engine.push(it) }
         entry = previous.entry
         entryActive = previous.entryActive
+        engine.setMemoryValue(previous.memory)
         refreshDisplay()
     }
 
@@ -161,6 +163,41 @@ class CalculatorImpl(
         refreshDisplay()
     }
 
+    /** Loads a constant (e.g. π) or the memory value as the new pending entry, like typing it. */
+    private fun handleLoadValue(value: BigDecimal) {
+        pushHistory()
+        ensureEntryPushed()
+        entry = value.toPlainString()
+        entryActive = true
+        refreshDisplay()
+    }
+
+    fun handleConstant(value: BigDecimal) = handleLoadValue(value)
+
+    fun handleMemoryRecall() = handleLoadValue(engine.memoryValue())
+
+    fun handleMemoryClear() {
+        pushHistory()
+        engine.memoryClear()
+        refreshDisplay()
+    }
+
+    fun handleMemoryAdd() {
+        val value = currentXValue() ?: return
+        pushHistory()
+        engine.memoryAdd(value)
+        refreshDisplay()
+    }
+
+    fun handleMemorySubtract() {
+        val value = currentXValue() ?: return
+        pushHistory()
+        engine.memorySubtract(value)
+        refreshDisplay()
+    }
+
+    private fun currentXValue(): BigDecimal? = if (entryActive) parseEntry() else engine.peek()
+
     fun handleDrop() {
         pushHistory()
         if (entryActive) {
@@ -221,7 +258,12 @@ class CalculatorImpl(
             val outcome = engine.applyUnary(unaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (operand != null) {
-                    recordHistory("${operand.format()}${symbolFor(operation)}", result.format())
+                    val formula = if (isNamedFunction(operation)) {
+                        "${symbolFor(operation)}(${operand.format()})"
+                    } else {
+                        "${operand.format()}${symbolFor(operation)}"
+                    }
+                    recordHistory(formula, result.format())
                 }
             }
         } else {
@@ -246,10 +288,20 @@ class CalculatorImpl(
         }
     }
 
-    private fun isUnary(operation: String) = operation == ROOT || operation == PERCENT
+    private fun isUnary(operation: String) = operation == ROOT || operation == PERCENT ||
+        operation == SQUARE || isNamedFunction(operation)
+
+    private fun isNamedFunction(operation: String) = operation == SIN || operation == COS ||
+        operation == TAN || operation == LOG || operation == LN
 
     private fun unaryFunction(operation: String): (BigDecimal) -> BigDecimal = when (operation) {
         ROOT -> RpnEngine.Companion::sqrt
+        SQUARE -> RpnEngine.Companion::square
+        SIN -> RpnEngine.Companion::sin
+        COS -> RpnEngine.Companion::cos
+        TAN -> RpnEngine.Companion::tan
+        LOG -> RpnEngine.Companion::log10
+        LN -> RpnEngine.Companion::ln
         else -> RpnEngine.Companion::percent
     }
 
@@ -269,6 +321,12 @@ class CalculatorImpl(
         DIVIDE -> "÷"
         POWER -> "^"
         ROOT -> "√"
+        SQUARE -> "²"
+        SIN -> "sin"
+        COS -> "cos"
+        TAN -> "tan"
+        LOG -> "log"
+        LN -> "ln"
         else -> "%"
     }
 
@@ -332,6 +390,7 @@ class CalculatorImpl(
         jsonObj.put(STACK, stackArray)
         jsonObj.put(ENTRY, entry)
         jsonObj.put(ENTRY_ACTIVE, entryActive)
+        jsonObj.put(MEMORY, engine.memoryValue().toString())
         return jsonObj
     }
 
@@ -350,5 +409,10 @@ class CalculatorImpl(
         }
         entry = jsonObject.optString(ENTRY, "0")
         entryActive = jsonObject.optBoolean(ENTRY_ACTIVE, false)
+        try {
+            engine.setMemoryValue(BigDecimal(jsonObject.optString(MEMORY, "0")))
+        } catch (_: NumberFormatException) {
+            // keep the default (zero) memory value
+        }
     }
 }

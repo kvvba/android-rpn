@@ -21,6 +21,7 @@ import org.fossify.commons.helpers.APP_ICON_IDS
 import org.fossify.commons.helpers.LICENSE_AUTOFITTEXTVIEW
 import org.fossify.commons.helpers.LICENSE_EVALEX
 import org.fossify.commons.helpers.LOWER_ALPHA_INT
+import org.fossify.commons.helpers.MAX_ALPHA_INT
 import org.fossify.commons.helpers.MEDIUM_ALPHA_INT
 import org.fossify.commons.models.FAQItem
 import com.jakub.rpncalculator.BuildConfig
@@ -33,20 +34,28 @@ import com.jakub.rpncalculator.extensions.updateViewColors
 import com.jakub.rpncalculator.helpers.CALCULATOR_STATE
 import com.jakub.rpncalculator.helpers.Calculator
 import com.jakub.rpncalculator.helpers.CalculatorImpl
+import com.jakub.rpncalculator.helpers.COS
 import com.jakub.rpncalculator.helpers.DIVIDE
 import com.jakub.rpncalculator.helpers.HistoryHelper
+import com.jakub.rpncalculator.helpers.LN
+import com.jakub.rpncalculator.helpers.LOG
 import com.jakub.rpncalculator.helpers.MINUS
 import com.jakub.rpncalculator.helpers.MULTIPLY
 import com.jakub.rpncalculator.helpers.PERCENT
 import com.jakub.rpncalculator.helpers.PLUS
 import com.jakub.rpncalculator.helpers.POWER
 import com.jakub.rpncalculator.helpers.ROOT
+import com.jakub.rpncalculator.helpers.RpnEngine
+import com.jakub.rpncalculator.helpers.SIN
+import com.jakub.rpncalculator.helpers.SQUARE
+import com.jakub.rpncalculator.helpers.TAN
 import com.jakub.rpncalculator.helpers.getDecimalSeparator
 
 class MainActivity : SimpleActivity(), Calculator {
     private var storedTextColor = 0
     private var vibrateOnButtonPress = true
     private var saveCalculatorState: String = ""
+    private var secondLayerActive = false
     private lateinit var calc: CalculatorImpl
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
@@ -86,6 +95,21 @@ class MainActivity : SimpleActivity(), Calculator {
         binding.btnBackspace?.setVibratingOnClickListener { calc.handleBackspace() }
         binding.btnAc?.setVibratingOnClickListener { calc.handleReset() }
 
+        binding.btnSecond?.setVibratingOnClickListener { toggleSecondLayer() }
+        binding.btnPi?.setVibratingOnClickListener { calc.handleConstant(RpnEngine.PI) }
+        binding.btnE?.setVibratingOnClickListener { calc.handleConstant(RpnEngine.E) }
+        binding.btnLog?.setOnClickOperation(LOG)
+        binding.btnLn?.setOnClickOperation(LN)
+        binding.btnSin?.setOnClickOperation(SIN)
+        binding.btnCos?.setOnClickOperation(COS)
+        binding.btnTan?.setOnClickOperation(TAN)
+        binding.btnSquare?.setOnClickOperation(SQUARE)
+        binding.btnMemoryClear?.setVibratingOnClickListener { calc.handleMemoryClear() }
+        binding.btnMemoryRecall?.setVibratingOnClickListener { calc.handleMemoryRecall() }
+        binding.btnMemoryAdd?.setVibratingOnClickListener { calc.handleMemoryAdd() }
+        binding.btnMemorySubtract?.setVibratingOnClickListener { calc.handleMemorySubtract() }
+        updateSecondLayerVisibility()
+
         getButtonIds().forEach {
             it?.setVibratingOnClickListener { view ->
                 calc.numpadClicked(view.id)
@@ -120,7 +144,9 @@ class MainActivity : SimpleActivity(), Calculator {
             arrayOf(
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace, btnAc,
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal,
-                btnRollUp, btnRollDown, btnUndo
+                btnRollUp, btnRollDown, btnUndo,
+                btnPi, btnE, btnLog, btnLn, btnSin, btnCos, btnTan, btnSquare,
+                btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract
             ).forEach {
                 it?.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
@@ -134,7 +160,35 @@ class MainActivity : SimpleActivity(), Calculator {
                 )
                 it?.background?.alpha = LOWER_ALPHA_INT
             }
+
+            btnSecond?.background = ResourcesCompat.getDrawable(
+                resources, org.fossify.commons.R.drawable.pill_background, theme
+            )
         }
+        updateSecondLayerToggleVisuals()
+    }
+
+    private fun toggleSecondLayer() {
+        secondLayerActive = !secondLayerActive
+        updateSecondLayerVisibility()
+    }
+
+    private fun updateSecondLayerVisibility() {
+        val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
+        val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
+        binding.apply {
+            row789?.visibility = firstLayerVisibility
+            row456?.visibility = firstLayerVisibility
+            row123?.visibility = firstLayerVisibility
+            rowConstants?.visibility = secondLayerVisibility
+            rowTrig?.visibility = secondLayerVisibility
+            rowMemory?.visibility = secondLayerVisibility
+        }
+        updateSecondLayerToggleVisuals()
+    }
+
+    private fun updateSecondLayerToggleVisuals() {
+        binding.btnSecond?.background?.alpha = if (secondLayerActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
     }
 
     override fun onPause() {
