@@ -3,6 +3,9 @@ package com.jakub.rpncalculator.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
@@ -65,7 +68,6 @@ class MainActivity : SimpleActivity(), Calculator {
     private var vibrateOnButtonPress = true
     private var saveCalculatorState: String = ""
     private var secondLayerActive = false
-    private var shiftActive = false
     private var hypActive = false
     private lateinit var calc: CalculatorImpl
 
@@ -98,16 +100,15 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnPower.setOnClickOperation(POWER)
         calcBinding.btnRoot.setOnClickOperation(ROOT)
         calcBinding.btnEnter.setVibratingOnClickListener { calc.handleEnter() }
-        calcBinding.btnUndo.setVibratingOnClickListener {
-            if (secondLayerActive) toggleShift() else calc.handleUndo()
-        }
+        calcBinding.btnUndo.setVibratingOnClickListener { calc.handleUndo() }
         calcBinding.btnRollUp.setVibratingOnClickListener { calc.handleRollUp() }
         calcBinding.btnRollDown.setVibratingOnClickListener { calc.handleRollDown() }
         calcBinding.btnSwap.setVibratingOnClickListener { calc.handleSwap() }
+        calcBinding.btnDrop.text = twoLineLabel("AC", "drop")
         calcBinding.btnDrop.setVibratingOnClickListener { calc.handleDrop() }
+        calcBinding.btnDrop.setVibratingOnLongClickListener { calc.handleReset() }
         calcBinding.btnChs.setVibratingOnClickListener { calc.handleChs() }
         calcBinding.btnBackspace.setVibratingOnClickListener { calc.handleBackspace() }
-        calcBinding.btnAc.setVibratingOnClickListener { calc.handleReset() }
 
         calcBinding.btnSecond.setVibratingOnClickListener { toggleSecondLayer() }
         calcBinding.btnPi.setVibratingOnClickListener { calc.handleConstant(RpnEngine.PI) }
@@ -116,13 +117,22 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnLn.setOnClickOperation(LN)
         calcBinding.btnHyp.setVibratingOnClickListener { toggleHyp() }
         calcBinding.btnSin.setVibratingOnClickListener {
-            calc.handleOperation(resolveTrig(SIN, ASIN, SINH, ASINH))
+            calc.handleOperation(if (hypActive) SINH else SIN)
+        }
+        calcBinding.btnSin.setVibratingOnLongClickListener {
+            calc.handleOperation(if (hypActive) ASINH else ASIN)
         }
         calcBinding.btnCos.setVibratingOnClickListener {
-            calc.handleOperation(resolveTrig(COS, ACOS, COSH, ACOSH))
+            calc.handleOperation(if (hypActive) COSH else COS)
+        }
+        calcBinding.btnCos.setVibratingOnLongClickListener {
+            calc.handleOperation(if (hypActive) ACOSH else ACOS)
         }
         calcBinding.btnTan.setVibratingOnClickListener {
-            calc.handleOperation(resolveTrig(TAN, ATAN, TANH, ATANH))
+            calc.handleOperation(if (hypActive) TANH else TAN)
+        }
+        calcBinding.btnTan.setVibratingOnLongClickListener {
+            calc.handleOperation(if (hypActive) ATANH else ATAN)
         }
         calcBinding.btnSquare.setOnClickOperation(SQUARE)
         calcBinding.btnNpr.setOnClickOperation(NPR)
@@ -176,13 +186,13 @@ class MainActivity : SimpleActivity(), Calculator {
 
         calcBinding.apply {
             arrayOf(
-                btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace, btnAc,
+                btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace,
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal, btnExponent,
                 btnRollUp, btnRollDown, btnUndo,
                 btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnSquare,
                 btnNpr, btnNcr, btnXthroot,
                 btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
-                btnBlankAc, btnBlankZero, btnBlankDecimal
+                btnBlankZero, btnBlankDecimal
             ).forEach {
                 it.background = ResourcesCompat.getDrawable(
                     resources, org.fossify.commons.R.drawable.pill_background, theme
@@ -212,13 +222,11 @@ class MainActivity : SimpleActivity(), Calculator {
     private fun updateSecondLayerVisibility() {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
-        calcBinding.btnUndo.text = if (secondLayerActive) "shift" else "undo"
         calcBinding.apply {
             rowOperators.visibility = firstLayerVisibility
             row789.visibility = firstLayerVisibility
             row456.visibility = firstLayerVisibility
             row123.visibility = firstLayerVisibility
-            btnAc.visibility = firstLayerVisibility
             btn0.visibility = firstLayerVisibility
             btnDecimal.visibility = firstLayerVisibility
 
@@ -226,7 +234,6 @@ class MainActivity : SimpleActivity(), Calculator {
             rowConstants.visibility = secondLayerVisibility
             rowTrig.visibility = secondLayerVisibility
             rowBlank.visibility = secondLayerVisibility
-            btnBlankAc.visibility = secondLayerVisibility
             btnBlankZero.visibility = secondLayerVisibility
             btnBlankDecimal.visibility = secondLayerVisibility
         }
@@ -237,38 +244,31 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnSecond.background?.alpha = if (secondLayerActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
     }
 
-    private fun toggleShift() {
-        shiftActive = !shiftActive
-        updateModifierVisuals()
-    }
-
     private fun toggleHyp() {
         hypActive = !hypActive
         updateModifierVisuals()
     }
 
     private fun updateModifierVisuals() {
-        calcBinding.btnUndo.background?.alpha = if (shiftActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
         calcBinding.btnHyp.background?.alpha = if (hypActive) MAX_ALPHA_INT else MEDIUM_ALPHA_INT
         calcBinding.btnSin.text = trigLabel("sin")
         calcBinding.btnCos.text = trigLabel("cos")
         calcBinding.btnTan.text = trigLabel("tan")
     }
 
-    private fun trigLabel(base: String) = when {
-        shiftActive && hypActive -> "${base}h⁻¹"
-        hypActive -> "${base}h"
-        shiftActive -> "$base⁻¹"
-        else -> base
+    /** Primary (tap) function big below, secondary (hold) function small above. */
+    private fun trigLabel(base: String) = if (hypActive) {
+        twoLineLabel("${base}h⁻¹", "${base}h")
+    } else {
+        twoLineLabel("$base⁻¹", base)
     }
 
-    private fun resolveTrig(normal: String, inverse: String, hyperbolic: String, inverseHyperbolic: String) =
-        when {
-            shiftActive && hypActive -> inverseHyperbolic
-            hypActive -> hyperbolic
-            shiftActive -> inverse
-            else -> normal
+    private fun twoLineLabel(secondary: String, primary: String): CharSequence {
+        val text = "$secondary\n$primary"
+        return SpannableString(text).apply {
+            setSpan(RelativeSizeSpan(0.6f), 0, secondary.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
+    }
 
     override fun onPause() {
         super.onPause()
@@ -408,6 +408,14 @@ class MainActivity : SimpleActivity(), Calculator {
         setOnClickListener {
             callback(it)
             checkHaptic(it)
+        }
+    }
+
+    private fun View.setVibratingOnLongClickListener(callback: (view: View) -> Unit) {
+        setOnLongClickListener {
+            callback(it)
+            checkHaptic(it)
+            true
         }
     }
 

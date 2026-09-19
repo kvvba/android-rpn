@@ -45,16 +45,6 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.jakub.rpncalculator.activities.WidgetConfigureActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/MyWidgetConfigTheme">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name="com.jakub.rpncalculator.activities.SettingsActivity"
             android:configChanges="orientation"
             android:exported="true"
@@ -73,27 +63,6 @@
             android:exported="false"
             android:label="@string/customize_colors"
             android:parentActivityName="com.jakub.rpncalculator.activities.SettingsActivity" />
-
-        <receiver
-            android:name="com.jakub.rpncalculator.helpers.MyWidgetProvider"
-            android:exported="true"
-            android:icon="@drawable/img_widget_preview">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
-        </receiver>
-
-        <receiver
-            android:name="com.jakub.rpncalculator.receivers.LocaleChangeReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.LOCALE_CHANGED" />
-            </intent-filter>
-        </receiver>
 
         <activity-alias
             android:name="com.jakub.rpncalculator.activities.SplashActivity.Green"

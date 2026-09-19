@@ -465,20 +465,12 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/btn_ac"
+            android:id="@+id/btn_exponent"
             style="@style/MyButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="AC" />
-
-        <TextView
-            android:id="@+id/btn_blank_ac"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:visibility="gone" />
+            android:text="E" />
 
         <TextView
             android:id="@+id/btn_0"
@@ -511,14 +503,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/btn_exponent"
-            style="@style/MyButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="E" />
 
         <TextView
             android:id="@+id/btn_enter"

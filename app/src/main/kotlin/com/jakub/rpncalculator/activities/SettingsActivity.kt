@@ -12,7 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.compose.extensions.enableEdgeToEdgeSimple
 import org.fossify.commons.compose.theme.AppThemeSurface
-import org.fossify.commons.helpers.IS_CUSTOMIZING_COLORS
 import org.fossify.commons.helpers.isTiramisuPlus
 import com.jakub.rpncalculator.compose.SettingsScreen
 import com.jakub.rpncalculator.extensions.config
@@ -50,7 +49,6 @@ class SettingsActivity : AppCompatActivity() {
                     displayLanguage = displayLanguage,
                     goBack = ::finish,
                     customizeColors = ::startCustomizationActivity,
-                    customizeWidgetColors = ::setupCustomizeWidgetColors,
                     preventPhoneFromSleeping = preventPhoneFromSleeping,
                     onPreventPhoneFromSleeping = preferences::preventPhoneFromSleeping::set,
                     vibrateOnButtonPressFlow = vibrateOnButtonPressFlow,
@@ -70,12 +68,5 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun startCustomizationActivity() {
         startActivity(Intent(applicationContext, CustomizationActivity::class.java))
-    }
-
-    private fun setupCustomizeWidgetColors() {
-        Intent(this, WidgetConfigureActivity::class.java).apply {
-            putExtra(IS_CUSTOMIZING_COLORS, true)
-            startActivity(this)
-        }
     }
 }
