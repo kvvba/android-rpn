@@ -35,6 +35,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/unit_conversions_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/bigger_margin"
+                android:paddingTop="@dimen/activity_margin"
+                android:paddingEnd="@dimen/bigger_margin"
+                android:paddingBottom="@dimen/normal_margin"
+                android:text="@string/unit_conversions_title"
+                android:textSize="@dimen/big_text_size"
+                android:textStyle="bold" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/unit_types_grid"
                 android:layout_width="match_parent"
@@ -51,16 +63,13 @@
                 android:id="@+id/formulas_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/normal_margin"
                 android:paddingStart="@dimen/bigger_margin"
-                android:paddingTop="@dimen/normal_margin"
+                android:paddingTop="@dimen/activity_margin"
                 android:paddingEnd="@dimen/bigger_margin"
-                android:paddingBottom="@dimen/small_margin"
-                android:text="@string/formulae"
-                android:textAllCaps="true"
-                android:textSize="@dimen/smaller_text_size"
-                android:textStyle="bold"
-                android:alpha="0.6" />
+                android:paddingBottom="@dimen/normal_margin"
+                android:text="@string/calculators_title"
+                android:textSize="@dimen/big_text_size"
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/formulas_list"

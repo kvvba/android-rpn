@@ -4,8 +4,11 @@
     <string name="scientific_calculator">Scientific Calculator</string>
     <string name="unit_converter">Unit converter</string>
     <string name="tools_title">Tools</string>
+    <string name="unit_conversions_title">Unit Conversions</string>
+    <string name="calculators_title">Calculators</string>
     <string name="formulae">Formulae</string>
     <string name="formula_fill_all_but_one">Fill in all fields except the one you want to calculate</string>
+    <string name="formula_fill_exactly_one">Fill in exactly one field</string>
     <string name="formula_invalid_number">%1$s is not a valid number</string>
     <string name="formula_calculate">Calculate</string>
     <string name="formula_clear">Clear</string>
@@ -19,6 +22,11 @@
     <string name="formula_var_density">Density</string>
     <string name="formula_var_velocity">Velocity</string>
     <string name="formula_var_characteristic_length">Characteristic length</string>
+    <string name="formula_hydraulic_diameter">Hydraulic diameter</string>
+    <string name="formula_hydraulic_diameter_expression">Dh = 2·W·H / (W + H)</string>
+    <string name="formula_var_hydraulic_diameter">Hydraulic diameter</string>
+    <string name="formula_var_width">Width</string>
+    <string name="formula_var_height">Height</string>
     <string name="formula_var_dynamic_viscosity">Dynamic viscosity</string>
 
     <string name="formula_prandtl_number">Prandtl number</string>
@@ -36,7 +44,7 @@
     <string name="formula_var_years">Years</string>
 
     <string name="formula_income_tax">Income tax</string>
-    <string name="formula_income_tax_expression">Tax = f(Income), by country</string>
+    <string name="formula_income_tax_expression">Take-home = Income − Tax(Income), by country</string>
     <string name="formula_var_tax">Tax</string>
     <string name="formula_var_income">Income</string>
     <string name="formula_tax_country_us">United States</string>
@@ -45,6 +53,8 @@
     <string name="formula_tax_country_hungary">Hungary</string>
     <string name="formula_tax_country_germany">Germany</string>
     <string name="formula_tax_country_france">France</string>
+    <string name="formula_take_home_year">Take-home pay / year</string>
+    <string name="formula_take_home_month">Take-home pay / month</string>
 
     <string name="formula_tip_split">Tip &amp; bill split</string>
     <string name="formula_tip_split_expression">PerPerson = Bill × (1 + Tip / 100) / People</string>

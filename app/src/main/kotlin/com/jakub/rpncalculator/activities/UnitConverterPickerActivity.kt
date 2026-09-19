@@ -45,7 +45,9 @@ class UnitConverterPickerActivity : SimpleActivity() {
         }
 
         binding.unitConverterPickerToolbar.setTitle(R.string.tools_title)
-        binding.formulasHeader.setTextColor(getProperTextColor())
+        val textColor = getProperTextColor()
+        binding.unitConversionsHeader.setTextColor(textColor)
+        binding.formulasHeader.setTextColor(textColor)
     }
 
     override fun onResume() {

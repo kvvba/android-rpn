@@ -82,6 +82,13 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/formula_derived_outputs_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_margin"
+                android:orientation="vertical" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

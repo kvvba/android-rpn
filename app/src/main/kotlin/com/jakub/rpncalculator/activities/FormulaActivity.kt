@@ -19,7 +19,9 @@ import com.jakub.rpncalculator.databinding.ItemFormulaVariableBinding
 import com.jakub.rpncalculator.extensions.config
 import com.jakub.rpncalculator.helpers.NumberFormatHelper
 import com.jakub.rpncalculator.helpers.formulas.Formula
+import com.jakub.rpncalculator.helpers.formulas.FormulaSection
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 class FormulaActivity : SimpleActivity() {
     companion object {
@@ -46,10 +48,14 @@ class FormulaActivity : SimpleActivity() {
         formula = selected
 
         binding.formulaToolbar.title = getString(formula.nameResId)
-        binding.formulaExpression.text = getString(formula.expressionResId)
-        binding.formulaExpression.setOnLongClickListener {
-            copyToClipboard(binding.formulaExpression.text.toString())
-            true
+        if (formula.showExpression) {
+            binding.formulaExpression.text = getString(formula.expressionResId)
+            binding.formulaExpression.setOnLongClickListener {
+                copyToClipboard(binding.formulaExpression.text.toString())
+                true
+            }
+        } else {
+            binding.formulaExpression.visibility = View.GONE
         }
 
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
@@ -135,6 +141,7 @@ class FormulaActivity : SimpleActivity() {
                 remove(prefsKey(symbol))
             }
         }.apply()
+        binding.formulaDerivedOutputsContainer.removeAllViews()
     }
 
     private fun updateViewColorsRecursively() {
@@ -150,6 +157,11 @@ class FormulaActivity : SimpleActivity() {
     }
 
     private fun calculate() {
+        if (formula.solveFromSingleField) {
+            calculateFromSingleField()
+            return
+        }
+
         val known = mutableMapOf<String, BigDecimal>()
         var blankSymbol: String? = null
         var blankCount = 0
@@ -176,8 +188,58 @@ class FormulaActivity : SimpleActivity() {
 
         try {
             val modeIndex = if (formula.modeOptions.isNotEmpty()) binding.formulaModeSpinner.selectedItemPosition else 0
-            val result = formula.solve(known, blankSymbol, modeIndex)
+            var result = formula.solve(known, blankSymbol, modeIndex)
+            if (formula.section == FormulaSection.FINANCE) {
+                result = result.setScale(2, RoundingMode.HALF_UP)
+            }
             inputsBySymbol.getValue(blankSymbol).setText(formatter.bigDecimalToString(result))
+            known[blankSymbol] = result
+
+            binding.formulaDerivedOutputsContainer.removeAllViews()
+            for ((labelResId, value) in formula.derivedOutputs(known, modeIndex)) {
+                val displayValue = if (formula.section == FormulaSection.FINANCE) {
+                    value.setScale(2, RoundingMode.HALF_UP)
+                } else {
+                    value
+                }
+                val row = TextView(this)
+                row.text = "${getString(labelResId)}: ${formatter.bigDecimalToString(displayValue)}"
+                row.setTextColor(getProperTextColor())
+                binding.formulaDerivedOutputsContainer.addView(row)
+            }
+        } catch (e: IllegalArgumentException) {
+            toast(e.message.orEmpty())
+        } catch (e: ArithmeticException) {
+            toast(e.message.orEmpty())
+        }
+    }
+
+    private fun calculateFromSingleField() {
+        val filled = inputsBySymbol.filterValues { it.text.toString().trim().isNotEmpty() }
+        if (filled.size != 1) {
+            toast(R.string.formula_fill_exactly_one)
+            return
+        }
+        val (symbol, input) = filled.entries.first()
+        val value = formatter.removeGroupingSeparator(input.text.toString().trim()).toBigDecimalOrNull()
+        if (value == null) {
+            toast(getString(R.string.formula_invalid_number, symbol))
+            return
+        }
+
+        try {
+            val modeIndex = if (formula.modeOptions.isNotEmpty()) binding.formulaModeSpinner.selectedItemPosition else 0
+            val results = formula.solveAll(symbol, value, modeIndex)
+            for ((otherSymbol, otherInput) in inputsBySymbol) {
+                if (otherSymbol == symbol) {
+                    continue
+                }
+                var result = results.getValue(otherSymbol)
+                if (formula.section == FormulaSection.FINANCE) {
+                    result = result.setScale(2, RoundingMode.HALF_UP)
+                }
+                otherInput.setText(formatter.bigDecimalToString(result))
+            }
         } catch (e: IllegalArgumentException) {
             toast(e.message.orEmpty())
         } catch (e: ArithmeticException) {

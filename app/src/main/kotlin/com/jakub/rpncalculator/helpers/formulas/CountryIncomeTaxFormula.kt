@@ -18,14 +18,19 @@ object CountryIncomeTaxFormula : Formula {
     override val section: FormulaSection = FormulaSection.FINANCE
     override val expressionResId: Int = R.string.formula_income_tax_expression
 
+    override val showExpression: Boolean = false
+    override val solveFromSingleField: Boolean = true
+
     override val variables: List<FormulaVariable> = listOf(
         FormulaVariable("Income", R.string.formula_var_income),
+        FormulaVariable("TakeHomeYear", R.string.formula_take_home_year),
+        FormulaVariable("TakeHomeMonth", R.string.formula_take_home_month),
         FormulaVariable("Tax", R.string.formula_var_tax)
     )
 
     override val modeOptions: List<Int> = listOf(
-        R.string.formula_tax_country_us,
         R.string.formula_tax_country_uk,
+        R.string.formula_tax_country_us,
         R.string.formula_tax_country_poland,
         R.string.formula_tax_country_hungary,
         R.string.formula_tax_country_germany,
@@ -106,8 +111,8 @@ object CountryIncomeTaxFormula : Formula {
     }
 
     private fun taxForIncome(income: BigDecimal, modeIndex: Int): BigDecimal = when (modeIndex) {
-        0 -> usTax(income)
-        1 -> ukTax(income)
+        0 -> ukTax(income)
+        1 -> usTax(income)
         2 -> polandTax(income)
         3 -> hungaryTax(income)
         4 -> germanyTax(income)
@@ -115,22 +120,39 @@ object CountryIncomeTaxFormula : Formula {
         else -> throw IllegalArgumentException("Unknown tax country: $modeIndex")
     }
 
-    /** Inverts the monotonic, non-invertible-in-closed-form tax function by bisection. */
-    private fun incomeForTax(tax: BigDecimal, modeIndex: Int): BigDecimal {
+    private fun netForIncome(income: BigDecimal, modeIndex: Int): BigDecimal =
+        income.subtract(taxForIncome(income, modeIndex), MATH_CONTEXT)
+
+    /** Bisects a monotonically increasing, non-invertible-in-closed-form function of income. */
+    private fun incomeWhere(target: BigDecimal, valueForIncome: (BigDecimal) -> BigDecimal): BigDecimal {
         var low = BigDecimal.ZERO
         var high = BigDecimal("1000000000")
         repeat(80) {
             val mid = low.add(high, MATH_CONTEXT).divide(BigDecimal(2), MATH_CONTEXT)
-            if (taxForIncome(mid, modeIndex) < tax) low = mid else high = mid
+            if (valueForIncome(mid) < target) low = mid else high = mid
         }
         return low.add(high, MATH_CONTEXT).divide(BigDecimal(2), MATH_CONTEXT)
     }
 
-    override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal {
-        return when (solveFor) {
-            "Tax" -> taxForIncome(known.getValue("Income"), modeIndex)
-            "Income" -> incomeForTax(known.getValue("Tax"), modeIndex)
-            else -> throw IllegalArgumentException("Cannot solve for $solveFor")
+    override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal =
+        throw UnsupportedOperationException("CountryIncomeTaxFormula solves via solveAll")
+
+    override fun solveAll(knownSymbol: String, knownValue: BigDecimal, modeIndex: Int): Map<String, BigDecimal> {
+        val income = when (knownSymbol) {
+            "Income" -> knownValue
+            "TakeHomeYear" -> incomeWhere(knownValue) { netForIncome(it, modeIndex) }
+            "TakeHomeMonth" -> incomeWhere(knownValue.multiply(BigDecimal(12), MATH_CONTEXT)) { netForIncome(it, modeIndex) }
+            "Tax" -> incomeWhere(knownValue) { taxForIncome(it, modeIndex) }
+            else -> throw IllegalArgumentException("Unknown field: $knownSymbol")
         }
+        val tax = taxForIncome(income, modeIndex)
+        val takeHomeYear = income.subtract(tax, MATH_CONTEXT)
+        val takeHomeMonth = takeHomeYear.divide(BigDecimal(12), MATH_CONTEXT)
+        return mapOf(
+            "Income" to income,
+            "TakeHomeYear" to takeHomeYear,
+            "TakeHomeMonth" to takeHomeMonth,
+            "Tax" to tax
+        )
     }
 }
