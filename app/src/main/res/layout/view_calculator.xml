@@ -448,11 +448,13 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/btn_blank_4"
+            android:id="@+id/btn_xthroot"
             style="@style/MyButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="ˣ√ʸ"
+            android:textSize="18sp" />
 
     </LinearLayout>
 
@@ -509,6 +511,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/btn_exponent"
+            style="@style/MyButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="E" />
 
         <TextView
             android:id="@+id/btn_enter"

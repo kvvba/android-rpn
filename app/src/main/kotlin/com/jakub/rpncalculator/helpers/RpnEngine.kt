@@ -156,6 +156,10 @@ class RpnEngine {
         fun power(a: BigDecimal, b: BigDecimal): BigDecimal =
             evaluateExpression("${a.toPlainString()}^${b.toPlainString()}")
 
+        /** The [x]th root of [y]: y^(1/x). */
+        fun xthRoot(y: BigDecimal, x: BigDecimal): BigDecimal =
+            evaluateExpression("${y.toPlainString()}^(1/${x.toPlainString()})")
+
         fun sqrt(a: BigDecimal): BigDecimal {
             if (a.signum() < 0) {
                 throw ArithmeticException("Square root of a negative number")

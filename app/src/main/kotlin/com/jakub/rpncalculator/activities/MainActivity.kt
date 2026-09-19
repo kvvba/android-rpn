@@ -57,6 +57,7 @@ import com.jakub.rpncalculator.helpers.SINH
 import com.jakub.rpncalculator.helpers.SQUARE
 import com.jakub.rpncalculator.helpers.TAN
 import com.jakub.rpncalculator.helpers.TANH
+import com.jakub.rpncalculator.helpers.XTH_ROOT
 import com.jakub.rpncalculator.helpers.getDecimalSeparator
 
 class MainActivity : SimpleActivity(), Calculator {
@@ -126,6 +127,8 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnSquare.setOnClickOperation(SQUARE)
         calcBinding.btnNpr.setOnClickOperation(NPR)
         calcBinding.btnNcr.setOnClickOperation(NCR)
+        calcBinding.btnXthroot.setOnClickOperation(XTH_ROOT)
+        calcBinding.btnExponent.setVibratingOnClickListener { calc.handleExponent() }
         calcBinding.btnMemoryClear.setVibratingOnClickListener { calc.handleMemoryClear() }
         calcBinding.btnMemoryRecall.setVibratingOnClickListener { calc.handleMemoryRecall() }
         calcBinding.btnMemoryAdd.setVibratingOnClickListener { calc.handleMemoryAdd() }
@@ -174,10 +177,10 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.apply {
             arrayOf(
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace, btnAc,
-                btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal,
+                btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal, btnExponent,
                 btnRollUp, btnRollDown, btnUndo,
                 btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnSquare,
-                btnNpr, btnNcr, btnBlank4,
+                btnNpr, btnNcr, btnXthroot,
                 btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
                 btnBlankAc, btnBlankZero, btnBlankDecimal
             ).forEach {

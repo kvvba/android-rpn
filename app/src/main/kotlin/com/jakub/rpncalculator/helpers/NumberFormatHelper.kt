@@ -28,13 +28,18 @@ class NumberFormatHelper(
      * exponent), not from a pre-rendered plain string: rendering first and measuring its length
      * would let [MAX_FRACTION_DIGITS] silently round a tiny nonzero value down to "0" before its
      * length was ever checked, hiding the fact that it needed scientific notation at all.
+     *
+     * A negative [BigDecimal.scale] (e.g. `BigDecimal("123E3")`, from typing "123" then the E
+     * key) means the value was expressed in scientific form to begin with; that's honored as a
+     * scientific-display request regardless of digit count, rather than silently normalized back
+     * to plain form just because it happens to be short.
      */
     fun bigDecimalToString(bd: BigDecimal): String {
         if (bd.signum() == 0) {
             return "0"
         }
 
-        return if (plainDigitCount(bd) <= MAX_DISPLAY_DIGITS) {
+        return if (bd.scale() >= 0 && plainDigitCount(bd) <= MAX_DISPLAY_DIGITS) {
             formatPlain(bd)
         } else {
             formatScientific(bd)

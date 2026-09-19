@@ -88,6 +88,16 @@ class NumberFormatHelperTest {
     }
 
     @Test
+    fun `a value entered via scientific notation displays in scientific notation`() {
+        // BigDecimal("123E3") has a negative scale (-3), unlike the equal-valued but
+        // plain-entered BigDecimal("123000") (scale 0) - that distinction is what signals this
+        // was typed via the "E" exponent key, and should stay scientific despite being short.
+        val value = BigDecimal("123E3")
+        assertEquals(0, value.compareTo(BigDecimal(123000)))
+        assertEquals("1${sep}23e+5", formatter.bigDecimalToString(value))
+    }
+
+    @Test
     fun `formatting never mutates the underlying value`() {
         val value = BigDecimal("123456789012345678.987654321")
         val copy = BigDecimal(value.toString())

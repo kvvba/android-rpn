@@ -33,6 +33,7 @@ const val LN = "ln"
 const val SQUARE = "square"
 const val NPR = "npr"
 const val NCR = "ncr"
+const val XTH_ROOT = "xthroot"
 
 const val ZERO = "zero"
 const val ONE = "one"

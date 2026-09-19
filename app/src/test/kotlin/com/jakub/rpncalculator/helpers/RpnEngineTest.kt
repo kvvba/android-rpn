@@ -264,6 +264,13 @@ class RpnEngineTest {
     }
 
     @Test
+    fun `xthRoot computes the x-th root of y`() {
+        val tolerance = BigDecimal("1e-10")
+        assertTrue(RpnEngine.xthRoot(BigDecimal(8), BigDecimal(3)).subtract(BigDecimal(2)).abs() < tolerance)
+        assertTrue(RpnEngine.xthRoot(BigDecimal(16), BigDecimal(4)).subtract(BigDecimal(2)).abs() < tolerance)
+    }
+
+    @Test
     fun `nPr and nCr reject r greater than n`() {
         try {
             RpnEngine.nPr(BigDecimal(2), BigDecimal(5))

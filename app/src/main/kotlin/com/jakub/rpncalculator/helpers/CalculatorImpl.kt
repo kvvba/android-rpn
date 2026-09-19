@@ -94,11 +94,19 @@ class CalculatorImpl(
         }
 
         entry += digit
-        entry = formatter.formatForDisplay(entry)
+        // Once an exponent ("E") has been typed, its digits are entered raw: grouping
+        // separators only make sense for the mantissa.
+        if (!entry.contains("E")) {
+            entry = formatter.formatForDisplay(entry)
+        }
         refreshDisplay()
     }
 
     private fun decimalClicked() {
+        if (entryActive && entry.contains("E")) {
+            return
+        }
+
         pushHistory()
         if (!entryActive) {
             entry = "0"
@@ -108,6 +116,21 @@ class CalculatorImpl(
         if (!entry.contains(decimalSeparator)) {
             entry += decimalSeparator
         }
+        refreshDisplay()
+    }
+
+    /** Appends the scientific-notation exponent marker, e.g. typing 1 2 3 then this key. */
+    fun handleExponent() {
+        if (entryActive && entry.contains("E")) {
+            return
+        }
+
+        pushHistory()
+        if (!entryActive) {
+            entry = "1"
+            entryActive = true
+        }
+        entry += "E"
         refreshDisplay()
     }
 
@@ -240,6 +263,8 @@ class CalculatorImpl(
         if (newEntry.isEmpty() || newEntry == "-") {
             entry = "0"
             entryActive = false
+        } else if (newEntry.contains("E")) {
+            entry = newEntry
         } else {
             entry = formatter.formatForDisplay(newEntry)
         }
@@ -284,10 +309,10 @@ class CalculatorImpl(
             val outcome = engine.applyBinary(binaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (a != null && b != null) {
-                    val formula = if (operation == LOG) {
-                        "log_${b.format()}(${a.format()})"
-                    } else {
-                        "${a.format()} ${symbolFor(operation)} ${b.format()}"
+                    val formula = when (operation) {
+                        LOG -> "log_${b.format()}(${a.format()})"
+                        XTH_ROOT -> "${b.format()}√(${a.format()})"
+                        else -> "${a.format()} ${symbolFor(operation)} ${b.format()}"
                     }
                     recordHistory(formula, result.format())
                 }
@@ -334,6 +359,7 @@ class CalculatorImpl(
             LOG -> RpnEngine.Companion::logBase
             NPR -> RpnEngine.Companion::nPr
             NCR -> RpnEngine.Companion::nCr
+            XTH_ROOT -> RpnEngine.Companion::xthRoot
             else -> RpnEngine.Companion::power
         }
 
@@ -360,6 +386,7 @@ class CalculatorImpl(
         LN -> "ln"
         NPR -> "nPr"
         NCR -> "nCr"
+        XTH_ROOT -> "√"
         else -> "%"
     }
 
