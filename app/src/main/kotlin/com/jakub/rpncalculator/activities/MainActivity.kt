@@ -4,8 +4,10 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
@@ -54,6 +56,7 @@ import com.jakub.rpncalculator.helpers.MODULUS
 import com.jakub.rpncalculator.helpers.MULTIPLY
 import com.jakub.rpncalculator.helpers.NCR
 import com.jakub.rpncalculator.helpers.NPR
+import com.jakub.rpncalculator.helpers.NumberFormatHelper
 import com.jakub.rpncalculator.helpers.PERCENT
 import com.jakub.rpncalculator.helpers.PERCENT_CHANGE
 import com.jakub.rpncalculator.helpers.PLUS
@@ -202,7 +205,10 @@ class MainActivity : SimpleActivity(), Calculator {
         }
 
         calcBinding.formula.setOnLongClickListener { copyToClipboard(false) }
-        calcBinding.result.setOnLongClickListener { copyToClipboard(true) }
+        calcBinding.result.setOnLongClickListener {
+            showRegisterOptions(calcBinding.result.value.orEmpty(), 0) {}
+            true
+        }
         AutofitHelper.create(calcBinding.result)
         storeStateVariables()
         calcBinding.calculatorHolder.let { updateViewColors(it, getProperTextColor()) }
@@ -407,25 +413,60 @@ class MainActivity : SimpleActivity(), Calculator {
         dialog.show()
         dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
         if (registers.isNotEmpty()) {
-            dialog.listView.setOnItemLongClickListener { _, _, position, _ ->
-                showCopyPasteChoice(registers[position].second) { dialog.dismiss() }
+            dialog.listView.setOnItemLongClickListener { _, _, displayPosition, _ ->
+                // registers is bottom-up (X last); handleEditRegister/replaceAt count down from
+                // X (0 = X, 1 = Y, ...), i.e. top-down, so the index needs flipping back.
+                val registerPosition = registers.size - 1 - displayPosition
+                showRegisterOptions(registers[displayPosition].second, registerPosition) { dialog.dismiss() }
                 true
             }
         }
     }
 
-    private fun showCopyPasteChoice(value: String, onPaste: () -> Unit) {
-        val choiceDialog = AlertDialog.Builder(this)
-            .setItems(arrayOf(getString(org.fossify.commons.R.string.copy), getString(R.string.paste))) { _, which ->
-                if (which == 0) {
-                    copyToClipboard(value)
-                } else {
-                    pasteIntoX()
-                    onPaste()
+    private fun showRegisterOptions(value: String, position: Int, onHandled: () -> Unit) {
+        val options = arrayOf(
+            getString(org.fossify.commons.R.string.copy),
+            getString(R.string.paste),
+            getString(org.fossify.commons.R.string.edit)
+        )
+        AlertDialog.Builder(this)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> copyToClipboard(value)
+                    1 -> {
+                        pasteIntoX()
+                        onHandled()
+                    }
+                    else -> showEditRegisterDialog(value, position, onHandled)
                 }
             }
             .create()
-        choiceDialog.show()
+            .show()
+    }
+
+    private fun showEditRegisterDialog(currentValue: String, position: Int, onHandled: () -> Unit) {
+        val input = EditText(this)
+        input.setText(currentValue)
+        input.inputType = InputType.TYPE_CLASS_NUMBER or
+            InputType.TYPE_NUMBER_FLAG_DECIMAL or
+            InputType.TYPE_NUMBER_FLAG_SIGNED
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(org.fossify.commons.R.string.edit)
+            .setView(input)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val normalized = NumberFormatHelper().removeGroupingSeparator(input.text.toString().trim())
+                val value = normalized.toBigDecimalOrNull()
+                if (value != null) {
+                    calc.handleEditRegister(position, value)
+                    onHandled()
+                } else {
+                    toast(R.string.invalid_number)
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+        dialog.show()
+        dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
     }
 
     private fun pasteIntoX() {
@@ -436,7 +477,7 @@ class MainActivity : SimpleActivity(), Calculator {
         } else {
             null
         }
-        val value = text?.toBigDecimalOrNull()
+        val value = text?.let { NumberFormatHelper().removeGroupingSeparator(it) }?.toBigDecimalOrNull()
         if (value != null) {
             calc.handleConstant(value)
         } else {

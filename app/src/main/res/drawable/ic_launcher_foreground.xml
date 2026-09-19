@@ -1,23 +1,24 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="512" android:viewportHeight="512">
     <!-- Italian-Futurist "dynamism of a delta": three trailing copies of an angular delta glyph,
-         translated along one diagonal and fading in, evoking Balla/Boccioni's repeated-silhouette
-         technique for depicting motion, plus a few speed-streak lines trailing the motion. -->
+         translated along one 45-degree diagonal and fading in, evoking Balla/Boccioni's
+         repeated-silhouette technique for depicting motion, plus a few speed-streak lines
+         trailing the motion. -->
     <group
         android:name="speed_lines"
-        android:pivotX="81"
-        android:pivotY="351"
-        android:rotation="-16">
-        <path android:pathData="M77,351 h8 v60 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.5" />
-        <path android:pathData="M60,351 h8 v45 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.35" />
-        <path android:pathData="M43,351 h8 v30 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.2" />
+        android:pivotX="91"
+        android:pivotY="441"
+        android:rotation="-45">
+        <path android:pathData="M87,441 h8 v60 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.5" />
+        <path android:pathData="M70,441 h8 v45 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.35" />
+        <path android:pathData="M53,441 h8 v30 h-8 z" android:fillColor="#FFFFFFFF" android:fillAlpha="0.2" />
     </group>
     <path
-        android:pathData="M161,151 L241,351 L81,351 Z M161,211 L205,321 L117,321 Z"
+        android:pathData="M171,241 L251,441 L91,441 Z M171,301 L215,411 L127,411 Z"
         android:fillColor="#FFFFFFFF"
         android:fillAlpha="0.35"
         android:fillType="evenOdd" />
     <path
-        android:pathData="M231,131 L311,331 L151,331 Z M231,191 L275,301 L187,301 Z"
+        android:pathData="M236,176 L316,376 L156,376 Z M236,236 L280,346 L192,346 Z"
         android:fillColor="#FFFFFFFF"
         android:fillAlpha="0.65"
         android:fillType="evenOdd" />

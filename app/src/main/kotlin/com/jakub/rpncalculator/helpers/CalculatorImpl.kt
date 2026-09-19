@@ -306,6 +306,14 @@ class CalculatorImpl(
         refreshDisplay()
     }
 
+    /** Directly overwrites the register [position] slots down from X (0 = X, 1 = Y, ...). */
+    fun handleEditRegister(position: Int, value: BigDecimal) {
+        pushHistory()
+        ensureEntryPushed()
+        engine.replaceAt(position, value)
+        refreshDisplay()
+    }
+
     fun currentDisplayMode(): DisplayMode = displayMode
 
     fun handleToggleDisplayMode() {

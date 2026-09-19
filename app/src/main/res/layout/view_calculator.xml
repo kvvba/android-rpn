@@ -691,9 +691,8 @@
             <TextView
                 android:id="@+id/btn_exponent_secondary"
                 style="@style/MyTwoTierButtonSecondary"
-                android:textSize="20sp"
                 android:textStyle="bold"
-                android:text="⇤" />
+                android:text="ENG➞" />
 
         </FrameLayout>
 
@@ -720,9 +719,8 @@
             <TextView
                 android:id="@+id/btn_0_secondary"
                 style="@style/MyTwoTierButtonSecondary"
-                android:textSize="20sp"
                 android:textStyle="bold"
-                android:text="⇥" />
+                android:text="ENG➞" />
 
         </FrameLayout>
 

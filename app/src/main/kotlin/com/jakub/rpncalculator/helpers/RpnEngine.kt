@@ -35,6 +35,18 @@ class RpnEngine {
 
     fun dropTop(): BigDecimal? = if (stack.isEmpty()) null else stack.removeLast()
 
+    /** Replaces the register [indexFromTop] positions down from X (0 = X, 1 = Y, ...). */
+    fun replaceAt(indexFromTop: Int, value: BigDecimal) {
+        val index = stack.size - 1 - indexFromTop
+        if (index !in stack.indices) {
+            return
+        }
+        val values = stack.toMutableList()
+        values[index] = value
+        stack.clear()
+        stack.addAll(values)
+    }
+
     fun swapTop(): Boolean {
         if (stack.size < 2) {
             return false
