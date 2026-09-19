@@ -16,7 +16,10 @@ interface Converter {
             TimeConverter,
             SpeedConverter,
             PressureConverter,
-            EnergyConverter
+            EnergyConverter,
+            PowerConverter,
+            FuelConsumptionConverter,
+            DataSizeConverter
         )
     }
 

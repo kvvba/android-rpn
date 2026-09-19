@@ -40,22 +40,28 @@ import com.jakub.rpncalculator.helpers.CalculatorImpl
 import com.jakub.rpncalculator.helpers.COS
 import com.jakub.rpncalculator.helpers.COSH
 import com.jakub.rpncalculator.helpers.DIVIDE
+import com.jakub.rpncalculator.helpers.DisplayMode
 import com.jakub.rpncalculator.helpers.EXP
+import com.jakub.rpncalculator.helpers.FACTORIAL
 import com.jakub.rpncalculator.helpers.HistoryHelper
 import com.jakub.rpncalculator.helpers.INVERSE
 import com.jakub.rpncalculator.helpers.LN
 import com.jakub.rpncalculator.helpers.LOG
 import com.jakub.rpncalculator.helpers.LOG10
 import com.jakub.rpncalculator.helpers.MINUS
+import com.jakub.rpncalculator.helpers.MODULUS
 import com.jakub.rpncalculator.helpers.MULTIPLY
 import com.jakub.rpncalculator.helpers.NCR
 import com.jakub.rpncalculator.helpers.NPR
 import com.jakub.rpncalculator.helpers.PERCENT
+import com.jakub.rpncalculator.helpers.PERCENT_CHANGE
 import com.jakub.rpncalculator.helpers.PLUS
 import com.jakub.rpncalculator.helpers.POWER
 import com.jakub.rpncalculator.helpers.POWER10
+import com.jakub.rpncalculator.helpers.QUOTIENT
 import com.jakub.rpncalculator.helpers.ROOT
 import com.jakub.rpncalculator.helpers.RpnEngine
+import com.jakub.rpncalculator.helpers.SCIENTIFIC_CONSTANTS
 import com.jakub.rpncalculator.helpers.SIN
 import com.jakub.rpncalculator.helpers.SINH
 import com.jakub.rpncalculator.helpers.SQUARE
@@ -93,9 +99,12 @@ class MainActivity : SimpleActivity(), Calculator {
             context = applicationContext,
             calculatorState = saveCalculatorState
         )
+        binding.stackCountIndicator.text = getString(R.string.stack_count_format, calc.stackCount())
         calcBinding.btnPlus.setOnClickOperation(PLUS)
+        calcBinding.btnPlus.setVibratingOnLongClickListener { calc.handleSum() }
         calcBinding.btnMinus.setOnClickOperation(MINUS)
         calcBinding.btnMultiply.setOnClickOperation(MULTIPLY)
+        calcBinding.btnMultiply.setVibratingOnLongClickListener { calc.handleProduct() }
         calcBinding.btnDivide.setOnClickOperation(DIVIDE)
         calcBinding.btnPercent.setVibratingOnClickListener { calc.handleOperation(PERCENT) }
         calcBinding.btnPercent.setVibratingOnLongClickListener { calc.handleOperation(INVERSE) }
@@ -105,17 +114,17 @@ class MainActivity : SimpleActivity(), Calculator {
         calcBinding.btnRoot.setVibratingOnLongClickListener { calc.handleOperation(SQUARE) }
         calcBinding.btnEnter.setVibratingOnClickListener { calc.handleEnter() }
         calcBinding.btnUndo.setVibratingOnClickListener { calc.handleUndo() }
-        calcBinding.btnRollUp.setVibratingOnClickListener { calc.handleRollUp() }
         calcBinding.btnRollDown.setVibratingOnClickListener { calc.handleRollDown() }
+        calcBinding.btnRollDown.setVibratingOnLongClickListener { calc.handleRollUp() }
         calcBinding.btnSwap.setVibratingOnClickListener { calc.handleSwap() }
+        calcBinding.btnSwap.setVibratingOnLongClickListener { calc.handleLastX() }
         calcBinding.btnDrop.setVibratingOnClickListener { calc.handleDrop() }
         calcBinding.btnDrop.setVibratingOnLongClickListener { calc.handleReset() }
         calcBinding.btnChs.setVibratingOnClickListener { calc.handleChs() }
         calcBinding.btnBackspace.setVibratingOnClickListener { calc.handleBackspace() }
 
         calcBinding.btnSecond.setVibratingOnClickListener { toggleSecondLayer() }
-        calcBinding.btnPi.setVibratingOnClickListener { calc.handleConstant(RpnEngine.PI) }
-        calcBinding.btnE.setVibratingOnClickListener { calc.handleConstant(RpnEngine.E) }
+        calcBinding.btnConst.setVibratingOnClickListener { showConstantsPicker() }
         calcBinding.btnLog.setOnClickOperation(LOG)
         calcBinding.btnLn.setVibratingOnClickListener { calc.handleOperation(LN) }
         calcBinding.btnLn.setVibratingOnLongClickListener { calc.handleOperation(EXP) }
@@ -142,11 +151,22 @@ class MainActivity : SimpleActivity(), Calculator {
         }
         calcBinding.btnNpr.setOnClickOperation(NPR)
         calcBinding.btnNcr.setOnClickOperation(NCR)
+        calcBinding.btnPercentChange.setOnClickOperation(PERCENT_CHANGE)
+        calcBinding.btnFactorial.setOnClickOperation(FACTORIAL)
+        calcBinding.btnMod.setVibratingOnClickListener { calc.handleOperation(MODULUS) }
+        calcBinding.btnMod.setVibratingOnLongClickListener { calc.handleOperation(QUOTIENT) }
         calcBinding.btnExponent.setVibratingOnClickListener { calc.handleExponent() }
-        calcBinding.btnMemoryClear.setVibratingOnClickListener { calc.handleMemoryClear() }
-        calcBinding.btnMemoryRecall.setVibratingOnClickListener { calc.handleMemoryRecall() }
-        calcBinding.btnMemoryAdd.setVibratingOnClickListener { calc.handleMemoryAdd() }
-        calcBinding.btnMemorySubtract.setVibratingOnClickListener { calc.handleMemorySubtract() }
+        calcBinding.btnExponent.setVibratingOnLongClickListener { calc.handleShiftEngineeringDown() }
+        calcBinding.btn7.setVibratingOnLongClickListener { calc.handleOperation(FACTORIAL) }
+        calcBinding.btn8.setVibratingOnLongClickListener { calc.handleOperation(NCR) }
+        calcBinding.btn9.setVibratingOnLongClickListener { calc.handleOperation(NPR) }
+        calcBinding.btn1.setVibratingOnLongClickListener { calc.handleConstant(RpnEngine.PI) }
+        calcBinding.btn2.setVibratingOnLongClickListener { calc.handleConstant(RpnEngine.E) }
+        calcBinding.btn3.setVibratingOnLongClickListener { calc.handleOperation(PERCENT_CHANGE) }
+        calcBinding.btn4.setVibratingOnLongClickListener { calc.handleMemoryClear() }
+        calcBinding.btn5.setVibratingOnLongClickListener { calc.handleMemoryRecall() }
+        calcBinding.btn6.setVibratingOnLongClickListener { calc.handleMemoryAdd() }
+        calcBinding.btnMinus.setVibratingOnLongClickListener { calc.handleMemorySubtract() }
         updateSecondLayerVisibility()
         updateModifierVisuals()
 
@@ -157,11 +177,22 @@ class MainActivity : SimpleActivity(), Calculator {
             binding.angleUnitIndicator.text = calc.currentAngleUnit().name
         }
 
+        updateDisplayModeIndicator()
+        binding.displayModeIndicator.setTextColor(getProperTextColor())
+        binding.displayModeIndicator.setVibratingOnClickListener {
+            calc.handleToggleDisplayMode()
+            updateDisplayModeIndicator()
+        }
+
+        binding.stackCountIndicator.setTextColor(getProperTextColor())
+        binding.stackCountIndicator.setVibratingOnClickListener { showStackPicker() }
+
         getButtonIds().forEach {
             it.setVibratingOnClickListener { view ->
                 calc.numpadClicked(view.id)
             }
         }
+        calcBinding.btn0.setVibratingOnLongClickListener { calc.handleShiftEngineeringUp() }
 
         calcBinding.formula.setOnLongClickListener { copyToClipboard(false) }
         calcBinding.result.setOnLongClickListener { copyToClipboard(true) }
@@ -179,6 +210,8 @@ class MainActivity : SimpleActivity(), Calculator {
         if (storedTextColor != config.textColor) {
             calcBinding.calculatorHolder.let { updateViewColors(it, getProperTextColor()) }
             binding.angleUnitIndicator.setTextColor(getProperTextColor())
+            binding.displayModeIndicator.setTextColor(getProperTextColor())
+            binding.stackCountIndicator.setTextColor(getProperTextColor())
         }
 
         if (config.preventPhoneFromSleeping) {
@@ -192,10 +225,9 @@ class MainActivity : SimpleActivity(), Calculator {
             arrayOf(
                 btnPercent, btnPower, btnRoot, btnSwap, btnDrop, btnChs, btnBackspace,
                 btnDivide, btnMultiply, btnPlus, btnMinus, btnEnter, btnDecimal, btnExponent,
-                btnRollUp, btnRollDown, btnUndo,
-                btnPi, btnE, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnLog10,
-                btnNpr, btnNcr, btnBlankRowBlank,
-                btnMemoryClear, btnMemoryRecall, btnMemoryAdd, btnMemorySubtract,
+                btnRollDown, btnUndo,
+                btnConst, btnLog, btnLn, btnHyp, btnSin, btnCos, btnTan, btnLog10,
+                btnNpr, btnNcr, btnPercentChange, btnFactorial, btnMod,
                 btnBlankZero, btnBlankDecimal, btnBlankExponent
             ).forEach {
                 it.background = ResourcesCompat.getDrawable(
@@ -227,7 +259,6 @@ class MainActivity : SimpleActivity(), Calculator {
         val firstLayerVisibility = if (secondLayerActive) View.GONE else View.VISIBLE
         val secondLayerVisibility = if (secondLayerActive) View.VISIBLE else View.GONE
         calcBinding.apply {
-            rowOperators.visibility = firstLayerVisibility
             row789.visibility = firstLayerVisibility
             row456.visibility = firstLayerVisibility
             row123.visibility = firstLayerVisibility
@@ -235,7 +266,6 @@ class MainActivity : SimpleActivity(), Calculator {
             btnDecimal.visibility = firstLayerVisibility
             btnExponent.visibility = firstLayerVisibility
 
-            rowMemory.visibility = secondLayerVisibility
             rowConstants.visibility = secondLayerVisibility
             rowTrig.visibility = secondLayerVisibility
             rowBlank.visibility = secondLayerVisibility
@@ -270,6 +300,15 @@ class MainActivity : SimpleActivity(), Calculator {
         } else {
             primaryView.text = base
             secondaryView.text = "$base⁻¹"
+        }
+    }
+
+    private fun updateDisplayModeIndicator() {
+        val mode = calc.currentDisplayMode()
+        binding.displayModeIndicator.text = when (mode) {
+            DisplayMode.NORMAL -> "NORM"
+            DisplayMode.SCIENTIFIC -> "SCI"
+            DisplayMode.ENGINEERING -> "ENG"
         }
     }
 
@@ -346,6 +385,38 @@ class MainActivity : SimpleActivity(), Calculator {
         startActivity(Intent(applicationContext, SettingsActivity::class.java))
     }
 
+    private fun showStackPicker() {
+        val registers = calc.stackSnapshot()
+        val lines = if (registers.isEmpty()) {
+            arrayOf(getString(R.string.stack_empty))
+        } else {
+            registers.map { (label, value) -> "$label: $value" }.toTypedArray()
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.stack_picker_title)
+            .setItems(lines, null)
+            .setPositiveButton(android.R.string.ok, null)
+            .create()
+        dialog.show()
+        dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
+        if (registers.isNotEmpty()) {
+            dialog.listView.setOnItemLongClickListener { _, _, position, _ ->
+                copyToClipboard(registers[position].second)
+                true
+            }
+        }
+    }
+
+    private fun showConstantsPicker() {
+        val labels = SCIENTIFIC_CONSTANTS.map { it.label }.toTypedArray()
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.constants_picker_title)
+            .setItems(labels) { _, which -> calc.handleConstant(SCIENTIFIC_CONSTANTS[which].value) }
+            .create()
+        dialog.show()
+        dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
+    }
+
     private fun launchAbout() {
         val dialog = AlertDialog.Builder(this)
             .setTitle(org.fossify.commons.R.string.about)
@@ -380,6 +451,11 @@ class MainActivity : SimpleActivity(), Calculator {
 
     override fun showNewFormula(value: String, context: Context) {
         calcBinding.formula.text = truncateStackToFit(calcBinding.formula, value)
+        // CalculatorImpl's own constructor calls this once before the `calc` field it belongs to
+        // is assigned, so guard against that first, harmless call (the stack is empty then).
+        if (::calc.isInitialized) {
+            binding.stackCountIndicator.text = getString(R.string.stack_count_format, calc.stackCount())
+        }
     }
 
     /**

@@ -36,6 +36,9 @@ class CalculatorImpl(
     private var entry = "0"
     private var entryActive = false
     private var angleUnit = AngleUnit.DEG
+    private var displayMode = DisplayMode.NORMAL
+    private var engineeringShift = 0
+    private var lastX: BigDecimal = BigDecimal.ZERO
     private val formatter = NumberFormatHelper()
     private val undoHistory = ArrayDeque<CalculatorSnapshot>()
 
@@ -94,16 +97,16 @@ class CalculatorImpl(
         }
 
         entry += digit
-        // Once an exponent ("E") has been typed, its digits are entered raw: grouping
+        // Once an exponent ("e") has been typed, its digits are entered raw: grouping
         // separators only make sense for the mantissa.
-        if (!entry.contains("E")) {
+        if (!entry.contains("e")) {
             entry = formatter.formatForDisplay(entry)
         }
         refreshDisplay()
     }
 
     private fun decimalClicked() {
-        if (entryActive && entry.contains("E")) {
+        if (entryActive && entry.contains("e")) {
             return
         }
 
@@ -121,7 +124,7 @@ class CalculatorImpl(
 
     /** Appends the scientific-notation exponent marker, e.g. typing 1 2 3 then this key. */
     fun handleExponent() {
-        if (entryActive && entry.contains("E")) {
+        if (entryActive && entry.contains("e")) {
             return
         }
 
@@ -130,7 +133,7 @@ class CalculatorImpl(
             entry = "1"
             entryActive = true
         }
-        entry += "E"
+        entry += "e"
         refreshDisplay()
     }
 
@@ -153,6 +156,40 @@ class CalculatorImpl(
         entry.removeGroupSeparator().toBigDecimal()
     } catch (_: NumberFormatException) {
         null
+    }
+
+    /** Replaces the entire stack with the sum of all its values. */
+    fun handleSum() {
+        val pendingCount = if (entryActive) 1 else 0
+        if (engine.size + pendingCount < 1) {
+            return
+        }
+
+        pushHistory()
+        ensureEntryPushed()
+        val values = engine.snapshot()
+        val sum = values.fold(BigDecimal.ZERO) { acc, value -> RpnEngine.add(acc, value) }
+        engine.clear()
+        engine.push(sum)
+        recordHistory("Σ(${values.joinToString(", ") { it.format() }})", sum.format())
+        refreshDisplay()
+    }
+
+    /** Replaces the entire stack with the product of all its values. */
+    fun handleProduct() {
+        val pendingCount = if (entryActive) 1 else 0
+        if (engine.size + pendingCount < 1) {
+            return
+        }
+
+        pushHistory()
+        ensureEntryPushed()
+        val values = engine.snapshot()
+        val product = values.fold(BigDecimal.ONE) { acc, value -> RpnEngine.multiply(acc, value) }
+        engine.clear()
+        engine.push(product)
+        recordHistory("Π(${values.joinToString(", ") { it.format() }})", product.format())
+        refreshDisplay()
     }
 
     fun handleSwap() {
@@ -202,6 +239,9 @@ class CalculatorImpl(
 
     fun handleConstant(value: BigDecimal) = handleLoadValue(value)
 
+    /** Re-enters the X value from just before the last successful operation, like an ANS key. */
+    fun handleLastX() = handleLoadValue(lastX)
+
     fun handleMemoryRecall() = handleLoadValue(engine.memoryValue())
 
     fun handleMemoryClear() {
@@ -226,10 +266,60 @@ class CalculatorImpl(
 
     private fun currentXValue(): BigDecimal? = if (entryActive) parseEntry() else engine.peek()
 
+    /** Number of populated registers: X (including a pending entry), Y, 1, 2, ... */
+    fun stackCount(): Int = engine.size + if (entryActive) 1 else 0
+
+    /** Registers from X down, each labeled X, Y, 1, 2, ... */
+    fun stackSnapshot(): List<Pair<String, String>> {
+        val labeled = mutableListOf<Pair<String, String>>()
+        var position = 0
+        if (entryActive) {
+            labeled.add(registerLabel(position) to displayEntry())
+            position++
+        }
+        engine.snapshot().asReversed().forEach { value ->
+            labeled.add(registerLabel(position) to value.format())
+            position++
+        }
+        return labeled
+    }
+
+    private fun registerLabel(position: Int) = when (position) {
+        0 -> "X"
+        1 -> "Y"
+        else -> (position - 1).toString()
+    }
+
     fun currentAngleUnit(): AngleUnit = angleUnit
 
     fun handleToggleAngleUnit() {
         angleUnit = angleUnit.next()
+    }
+
+    fun currentDisplayMode(): DisplayMode = displayMode
+
+    fun handleToggleDisplayMode() {
+        displayMode = displayMode.next()
+        engineeringShift = 0
+        refreshDisplay()
+    }
+
+    /** Shifts the engineering exponent down (toward, and past, the natural grouping); unbounded. */
+    fun handleShiftEngineeringDown() {
+        if (displayMode != DisplayMode.ENGINEERING) {
+            return
+        }
+        engineeringShift -= 3
+        refreshDisplay()
+    }
+
+    /** Shifts the engineering exponent up by another multiple of 3; unbounded. */
+    fun handleShiftEngineeringUp() {
+        if (displayMode != DisplayMode.ENGINEERING) {
+            return
+        }
+        engineeringShift += 3
+        refreshDisplay()
     }
 
     fun handleDrop() {
@@ -248,7 +338,7 @@ class CalculatorImpl(
         if (entryActive) {
             // Once an exponent has been typed, +/- negates the exponent rather than the
             // significand, matching where the user is actively typing.
-            val exponentIndex = entry.indexOf("E")
+            val exponentIndex = entry.indexOf("e")
             entry = if (exponentIndex == -1) {
                 negateLeadingSign(entry)
             } else {
@@ -269,11 +359,15 @@ class CalculatorImpl(
         }
 
         pushHistory()
-        val newEntry = entry.dropLast(1).trimEnd(groupingSeparator.single())
+        val dropped = entry.dropLast(1).trimEnd(groupingSeparator.single())
+        // A dangling exponent sign with no digits left after it (e.g. "1e-" from deleting the
+        // last exponent digit of "1e-2") disappears along with that digit, same as the
+        // significand's sign does.
+        val newEntry = if (dropped.endsWith("e-")) dropped.dropLast(1) else dropped
         if (newEntry.isEmpty() || newEntry == "-") {
             entry = "0"
             entryActive = false
-        } else if (newEntry.contains("E")) {
+        } else if (newEntry.contains("e")) {
             entry = newEntry
         } else {
             entry = formatter.formatForDisplay(newEntry)
@@ -304,6 +398,7 @@ class CalculatorImpl(
             val outcome = engine.applyUnary(unaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (operand != null) {
+                    lastX = operand
                     val formula = when {
                         operation == EXP -> "e^${operand.format()}"
                         operation == POWER10 -> "10^${operand.format()}"
@@ -320,6 +415,7 @@ class CalculatorImpl(
             val outcome = engine.applyBinary(binaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (a != null && b != null) {
+                    lastX = b
                     val formula = when (operation) {
                         LOG -> "log_${b.format()}(${a.format()})"
                         XTH_ROOT -> "${b.format()}√(${a.format()})"
@@ -339,7 +435,7 @@ class CalculatorImpl(
 
     private fun isUnary(operation: String) = operation == ROOT || operation == PERCENT ||
         operation == SQUARE || operation == INVERSE || operation == EXP || operation == POWER10 ||
-        isNamedFunction(operation)
+        operation == FACTORIAL || isNamedFunction(operation)
 
     private fun isNamedFunction(operation: String) = operation in NAMED_UNARY_FUNCTIONS
 
@@ -363,6 +459,7 @@ class CalculatorImpl(
         EXP -> RpnEngine.Companion::exp
         LOG10 -> RpnEngine.Companion::log10
         POWER10 -> { a -> RpnEngine.power(BigDecimal.TEN, a) }
+        FACTORIAL -> RpnEngine.Companion::factorial
         else -> RpnEngine.Companion::percent
     }
 
@@ -372,10 +469,13 @@ class CalculatorImpl(
             MINUS -> RpnEngine.Companion::subtract
             MULTIPLY -> RpnEngine.Companion::multiply
             DIVIDE -> RpnEngine.Companion::divide
+            MODULUS -> RpnEngine.Companion::modulus
+            QUOTIENT -> RpnEngine.Companion::quotient
             LOG -> RpnEngine.Companion::logBase
             NPR -> RpnEngine.Companion::nPr
             NCR -> RpnEngine.Companion::nCr
             XTH_ROOT -> RpnEngine.Companion::xthRoot
+            PERCENT_CHANGE -> RpnEngine.Companion::percentChange
             else -> RpnEngine.Companion::power
         }
 
@@ -384,6 +484,8 @@ class CalculatorImpl(
         MINUS -> "-"
         MULTIPLY -> "×"
         DIVIDE -> "÷"
+        MODULUS -> "mod"
+        QUOTIENT -> "quot"
         POWER -> "^"
         ROOT -> "√"
         SQUARE -> "²"
@@ -405,6 +507,8 @@ class CalculatorImpl(
         XTH_ROOT -> "√"
         INVERSE -> "⁻¹"
         LOG10 -> "log10"
+        FACTORIAL -> "!"
+        PERCENT_CHANGE -> "Δ%"
         else -> "%"
     }
 
@@ -453,11 +557,26 @@ class CalculatorImpl(
         val stackText = stackBelowX.joinToString("\n") { it.format() }
         callback!!.showNewFormula(stackText, context)
 
-        val xText = if (entryActive) entry else (engine.peek()?.format() ?: "0")
+        val xText = if (entryActive) displayEntry() else (engine.peek()?.format() ?: "0")
         callback!!.showNewResult(xText, context)
     }
 
-    private fun BigDecimal.format() = formatter.bigDecimalToString(this)
+    /**
+     * [entry] as typed, but with an explicit "+" inserted before an as-yet-unsigned exponent -
+     * matching how a value is shown once it's actually pushed (e.g. "1.23e+5"), so scientific
+     * notation looks the same while typing as it does afterward.
+     */
+    private fun displayEntry(): String {
+        val eIndex = entry.indexOf("e")
+        if (eIndex == -1) {
+            return entry
+        }
+        val exponent = entry.substring(eIndex + 1)
+        val signedExponent = if (exponent.startsWith("-")) exponent else "+$exponent"
+        return entry.substring(0, eIndex) + "e" + signedExponent
+    }
+
+    private fun BigDecimal.format() = formatter.bigDecimalToString(this, displayMode, engineeringShift)
 
     private fun String.removeGroupSeparator() = formatter.removeGroupingSeparator(this)
 
@@ -470,6 +589,9 @@ class CalculatorImpl(
         jsonObj.put(ENTRY_ACTIVE, entryActive)
         jsonObj.put(MEMORY, engine.memoryValue().toString())
         jsonObj.put(ANGLE_UNIT, angleUnit.name)
+        jsonObj.put(DISPLAY_MODE, displayMode.name)
+        jsonObj.put(ENGINEERING_SHIFT, engineeringShift)
+        jsonObj.put(LAST_X, lastX.toString())
         return jsonObj
     }
 
@@ -497,6 +619,17 @@ class CalculatorImpl(
             angleUnit = AngleUnit.valueOf(jsonObject.optString(ANGLE_UNIT, AngleUnit.DEG.name))
         } catch (_: IllegalArgumentException) {
             angleUnit = AngleUnit.DEG
+        }
+        try {
+            displayMode = DisplayMode.valueOf(jsonObject.optString(DISPLAY_MODE, DisplayMode.NORMAL.name))
+        } catch (_: IllegalArgumentException) {
+            displayMode = DisplayMode.NORMAL
+        }
+        engineeringShift = jsonObject.optInt(ENGINEERING_SHIFT, 0)
+        try {
+            lastX = BigDecimal(jsonObject.optString(LAST_X, "0"))
+        } catch (_: NumberFormatException) {
+            lastX = BigDecimal.ZERO
         }
     }
 }

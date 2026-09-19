@@ -33,16 +33,29 @@ class NumberFormatHelper(
      * key) means the value was expressed in scientific form to begin with; that's honored as a
      * scientific-display request regardless of digit count, rather than silently normalized back
      * to plain form just because it happens to be short.
+     *
+     * [displayMode] can force scientific or engineering notation regardless of digit count;
+     * [engineeringShift] (a multiple of 3) further shifts an engineering-mode exponent, letting
+     * the same value be viewed at different powers of a thousand.
      */
-    fun bigDecimalToString(bd: BigDecimal): String {
+    fun bigDecimalToString(
+        bd: BigDecimal,
+        displayMode: DisplayMode = DisplayMode.NORMAL,
+        engineeringShift: Int = 0
+    ): String {
         if (bd.signum() == 0) {
             return "0"
         }
 
-        return if (bd.scale() >= 0 && plainDigitCount(bd) <= MAX_DISPLAY_DIGITS) {
-            formatPlain(bd)
-        } else {
-            formatScientific(bd)
+        return when (displayMode) {
+            DisplayMode.NORMAL -> if (bd.scale() >= 0 && plainDigitCount(bd) <= MAX_DISPLAY_DIGITS) {
+                formatPlain(bd)
+            } else {
+                formatScientific(bd)
+            }
+
+            DisplayMode.SCIENTIFIC -> formatScientific(bd)
+            DisplayMode.ENGINEERING -> formatEngineering(bd, engineeringShift)
         }
     }
 
@@ -96,6 +109,40 @@ class NumberFormatHelper(
             mantissa = mantissa.movePointLeft(1).round(MathContext(mantissaPrecision))
             exponent++
         }
+
+        var mantissaStr = mantissa.toPlainString()
+        if (mantissaStr.contains('.')) {
+            mantissaStr = mantissaStr.trimEnd('0').trimEnd('.')
+        }
+        mantissaStr = mantissaStr.replace(".", decimalSeparator)
+
+        val sign = if (bd.signum() < 0) "-" else ""
+        val exponentSign = if (exponent >= 0) "+" else "-"
+        return "$sign${mantissaStr}e$exponentSign${abs(exponent)}"
+    }
+
+    /**
+     * Like [formatScientific], but the exponent is rounded UP to the nearest multiple of 3 (so
+     * the mantissa can land below 1, e.g. 100 -> "0.1e+3" rather than "100e+0"), plus
+     * [extraShift] (itself a multiple of 3) to let the same value be viewed at an adjacent power
+     * of a thousand, e.g. "0.1e+3" -> "0.0001e+6".
+     */
+    private fun formatEngineering(bd: BigDecimal, extraShift: Int): String {
+        if (bd.signum() == 0) {
+            return "0"
+        }
+
+        val absValue = bd.abs()
+        val significantDigits = absValue.unscaledValue().toString().length
+        val naturalExponent = significantDigits - 1 - absValue.scale()
+
+        val quotient = Math.floorDiv(naturalExponent, 3)
+        val baseExponent = if (naturalExponent - quotient * 3 == 0) quotient * 3 else (quotient + 1) * 3
+        val exponent = baseExponent + extraShift
+
+        val exponentDigits = abs(exponent).toString().length
+        val mantissaPrecision = (MAX_DISPLAY_DIGITS - exponentDigits).coerceAtLeast(1)
+        val mantissa = absValue.movePointLeft(exponent).round(MathContext(mantissaPrecision))
 
         var mantissaStr = mantissa.toPlainString()
         if (mantissaStr.contains('.')) {

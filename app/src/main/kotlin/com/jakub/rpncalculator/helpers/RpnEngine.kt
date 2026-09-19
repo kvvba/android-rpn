@@ -153,6 +153,20 @@ class RpnEngine {
             return a.divide(b, MATH_CONTEXT)
         }
 
+        fun modulus(a: BigDecimal, b: BigDecimal): BigDecimal {
+            if (b.signum() == 0) {
+                throw ArithmeticException("Division by zero")
+            }
+            return a.remainder(b, MATH_CONTEXT)
+        }
+
+        fun quotient(a: BigDecimal, b: BigDecimal): BigDecimal {
+            if (b.signum() == 0) {
+                throw ArithmeticException("Division by zero")
+            }
+            return a.divideToIntegralValue(b, MATH_CONTEXT)
+        }
+
         fun power(a: BigDecimal, b: BigDecimal): BigDecimal =
             evaluateExpression("${a.toPlainString()}^${b.toPlainString()}")
 
@@ -177,6 +191,22 @@ class RpnEngine {
             evaluateExpression("LOG10(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
         fun percent(a: BigDecimal): BigDecimal = a.divide(BigDecimal(100), MATH_CONTEXT)
+
+        /** Percentage change of [x] from [y]: 100 * (x - y) / y. */
+        fun percentChange(y: BigDecimal, x: BigDecimal): BigDecimal =
+            BigDecimal(100).multiply(x.subtract(y, MATH_CONTEXT), MATH_CONTEXT).divide(y, MATH_CONTEXT)
+
+        fun factorial(a: BigDecimal): BigDecimal {
+            val n = a.intValueExact()
+            if (n < 0) {
+                throw ArithmeticException("Factorial requires a non-negative integer")
+            }
+            var result = BigDecimal.ONE
+            for (i in 2..n) {
+                result = result.multiply(BigDecimal(i))
+            }
+            return result
+        }
 
         fun negate(a: BigDecimal): BigDecimal = a.negate()
 

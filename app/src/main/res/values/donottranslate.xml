@@ -120,4 +120,29 @@
     <string name="unit_energy_therm_symbol">thm</string>
     <string name="unit_energy_foot_pound_symbol">ft⋅lbf</string>
     <string name="unit_energy_erg_symbol">erg</string>
+
+    <string name="unit_power_milliwatt_symbol">mW</string>
+    <string name="unit_power_watt_symbol">W</string>
+    <string name="unit_power_kilowatt_symbol">kW</string>
+    <string name="unit_power_megawatt_symbol">MW</string>
+    <string name="unit_power_gigawatt_symbol">GW</string>
+    <string name="unit_power_horsepower_mechanical_symbol">hp</string>
+    <string name="unit_power_horsepower_metric_symbol">PS</string>
+    <string name="unit_power_btu_per_hour_symbol">BTU/h</string>
+
+    <string name="unit_fuel_consumption_liters_per_100km_symbol">L/100km</string>
+    <string name="unit_fuel_consumption_kilometers_per_liter_symbol">km/L</string>
+    <string name="unit_fuel_consumption_mpg_us_symbol">mpg (US)</string>
+    <string name="unit_fuel_consumption_mpg_imperial_symbol">mpg (UK)</string>
+
+    <string name="unit_data_size_bit_symbol">bit</string>
+    <string name="unit_data_size_byte_symbol">B</string>
+    <string name="unit_data_size_kilobyte_symbol">kB</string>
+    <string name="unit_data_size_kibibyte_symbol">KiB</string>
+    <string name="unit_data_size_megabyte_symbol">MB</string>
+    <string name="unit_data_size_mebibyte_symbol">MiB</string>
+    <string name="unit_data_size_gigabyte_symbol">GB</string>
+    <string name="unit_data_size_gibibyte_symbol">GiB</string>
+    <string name="unit_data_size_terabyte_symbol">TB</string>
+    <string name="unit_data_size_tebibyte_symbol">TiB</string>
 </resources>

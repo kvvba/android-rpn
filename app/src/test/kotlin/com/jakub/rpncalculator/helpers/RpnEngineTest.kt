@@ -271,6 +271,60 @@ class RpnEngineTest {
     }
 
     @Test
+    fun `factorial multiplies down to 1`() {
+        assertEquals(0, BigDecimal(120).compareTo(RpnEngine.factorial(BigDecimal(5))))
+        assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.factorial(BigDecimal.ZERO)))
+    }
+
+    @Test
+    fun `factorial rejects negative numbers`() {
+        try {
+            RpnEngine.factorial(BigDecimal(-1))
+            assertTrue("expected ArithmeticException", false)
+        } catch (_: ArithmeticException) {
+            // expected
+        }
+    }
+
+    @Test
+    fun `percentChange computes 100 times (x minus y) over y`() {
+        assertEquals(0, BigDecimal(-10).compareTo(RpnEngine.percentChange(BigDecimal(100), BigDecimal(90))))
+        assertEquals(0, BigDecimal(10).compareTo(RpnEngine.percentChange(BigDecimal(100), BigDecimal(110))))
+    }
+
+    @Test
+    fun `modulus computes the remainder of a divided by b`() {
+        assertEquals(0, BigDecimal(1).compareTo(RpnEngine.modulus(BigDecimal(7), BigDecimal(3))))
+        assertEquals(0, BigDecimal(-1).compareTo(RpnEngine.modulus(BigDecimal(-7), BigDecimal(3))))
+    }
+
+    @Test
+    fun `modulus by zero fails`() {
+        try {
+            RpnEngine.modulus(BigDecimal(7), BigDecimal.ZERO)
+            assertTrue("expected ArithmeticException", false)
+        } catch (_: ArithmeticException) {
+            // expected
+        }
+    }
+
+    @Test
+    fun `quotient computes the truncated integer division of a by b`() {
+        assertEquals(0, BigDecimal(2).compareTo(RpnEngine.quotient(BigDecimal(7), BigDecimal(3))))
+        assertEquals(0, BigDecimal(-2).compareTo(RpnEngine.quotient(BigDecimal(-7), BigDecimal(3))))
+    }
+
+    @Test
+    fun `quotient by zero fails`() {
+        try {
+            RpnEngine.quotient(BigDecimal(7), BigDecimal.ZERO)
+            assertTrue("expected ArithmeticException", false)
+        } catch (_: ArithmeticException) {
+            // expected
+        }
+    }
+
+    @Test
     fun `nPr counts ordered arrangements`() {
         assertEquals(0, BigDecimal(20).compareTo(RpnEngine.nPr(BigDecimal(5), BigDecimal(2))))
         assertEquals(0, BigDecimal.ONE.compareTo(RpnEngine.nPr(BigDecimal(5), BigDecimal.ZERO)))

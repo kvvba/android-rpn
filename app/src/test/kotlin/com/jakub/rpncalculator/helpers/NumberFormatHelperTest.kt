@@ -98,6 +98,34 @@ class NumberFormatHelperTest {
     }
 
     @Test
+    fun `scientific mode always uses scientific notation regardless of digit count`() {
+        val result = formatter.bigDecimalToString(BigDecimal(100), DisplayMode.SCIENTIFIC)
+        assertEquals("1e+2", result)
+    }
+
+    @Test
+    fun `engineering mode rounds the exponent up to a multiple of 3`() {
+        // 100 = 1e+2 in scientific form; engineering rounds the exponent up to 3.
+        val result = formatter.bigDecimalToString(BigDecimal(100), DisplayMode.ENGINEERING)
+        assertEquals("0${sep}1e+3", result)
+    }
+
+    @Test
+    fun `engineering shift moves the value to the next power of a thousand`() {
+        val base = formatter.bigDecimalToString(BigDecimal(100), DisplayMode.ENGINEERING, 0)
+        val shifted = formatter.bigDecimalToString(BigDecimal(100), DisplayMode.ENGINEERING, 3)
+        assertEquals("0${sep}1e+3", base)
+        assertEquals("0${sep}0001e+6", shifted)
+    }
+
+    @Test
+    fun `engineering shift can also move down to the natural grouping`() {
+        // Base engineering form is 0.1e+3; shifting down by 3 reaches the natural 100e+0.
+        val shiftedDown = formatter.bigDecimalToString(BigDecimal(100), DisplayMode.ENGINEERING, -3)
+        assertEquals("100e+0", shiftedDown)
+    }
+
+    @Test
     fun `formatting never mutates the underlying value`() {
         val value = BigDecimal("123456789012345678.987654321")
         val copy = BigDecimal(value.toString())
