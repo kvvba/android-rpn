@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/formula_section_header_label"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/bigger_margin"
+    android:paddingTop="@dimen/normal_margin"
+    android:paddingEnd="@dimen/bigger_margin"
+    android:paddingBottom="@dimen/small_margin"
+    android:textAllCaps="true"
+    android:textSize="@dimen/smaller_text_size"
+    android:textStyle="bold"
+    android:alpha="0.6"
+    tools:text="Scientific" />

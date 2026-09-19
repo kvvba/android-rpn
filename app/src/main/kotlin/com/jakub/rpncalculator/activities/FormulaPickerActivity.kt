@@ -3,43 +3,40 @@ package com.jakub.rpncalculator.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import com.jakub.rpncalculator.R
-import com.jakub.rpncalculator.adapters.UnitTypesAdapter
-import com.jakub.rpncalculator.databinding.ActivityUnitConverterPickerBinding
+import com.jakub.rpncalculator.adapters.FormulasAdapter
+import com.jakub.rpncalculator.databinding.ActivityFormulaPickerBinding
 import com.jakub.rpncalculator.extensions.config
-import com.jakub.rpncalculator.helpers.converters.Converter
+import com.jakub.rpncalculator.helpers.formulas.Formula
 
-class UnitConverterPickerActivity : SimpleActivity() {
-    private val binding by viewBinding(ActivityUnitConverterPickerBinding::inflate)
+class FormulaPickerActivity : SimpleActivity() {
+    private val binding by viewBinding(ActivityFormulaPickerBinding::inflate)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        setupEdgeToEdge(padBottomSystem = listOf(binding.unitTypesGrid))
-        setupMaterialScrollListener(
-            binding.unitTypesGrid,
-            binding.unitConverterPickerAppbar
-        )
+        setupEdgeToEdge(padBottomSystem = listOf(binding.formulasGrid))
+        setupMaterialScrollListener(binding.formulasGrid, binding.formulaPickerAppbar)
 
-        binding.unitTypesGrid.layoutManager = GridLayoutManager(this, 2)
-        binding.unitTypesGrid.adapter = UnitTypesAdapter(this, Converter.ALL) {
-            Intent(this, UnitConverterActivity::class.java).apply {
-                putExtra(UnitConverterActivity.EXTRA_CONVERTER_ID, it)
+        binding.formulasGrid.layoutManager = LinearLayoutManager(this)
+        binding.formulasGrid.adapter = FormulasAdapter(this, Formula.ALL) {
+            Intent(this, FormulaActivity::class.java).apply {
+                putExtra(FormulaActivity.EXTRA_FORMULA_ID, it)
                 startActivity(this)
             }
         }
 
-        binding.unitConverterPickerToolbar.setTitle(R.string.unit_converter)
+        binding.formulaPickerToolbar.setTitle(R.string.formulae)
 
-        binding.converterFormulaTabs.getTabAt(0)!!.select()
+        binding.converterFormulaTabs.getTabAt(1)!!.select()
         binding.converterFormulaTabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                if (tab.position == 1) {
-                    startActivity(Intent(this@UnitConverterPickerActivity, FormulaPickerActivity::class.java))
+                if (tab.position == 0) {
+                    startActivity(Intent(this@FormulaPickerActivity, UnitConverterPickerActivity::class.java))
                     finish()
                 }
             }
@@ -52,7 +49,7 @@ class UnitConverterPickerActivity : SimpleActivity() {
     override fun onResume() {
         super.onResume()
 
-        setupTopAppBar(binding.unitConverterPickerAppbar, NavigationIcon.Arrow)
+        setupTopAppBar(binding.formulaPickerAppbar, NavigationIcon.Arrow)
 
         if (config.preventPhoneFromSleeping) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

@@ -420,7 +420,9 @@ class CalculatorImpl(
             val outcome = engine.applyUnary(unaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (operand != null) {
-                    lastX = operand
+                    if (operand.signum() != 0) {
+                        lastX = operand
+                    }
                     val formula = when {
                         operation == EXP -> "e^${operand.format()}"
                         operation == POWER10 -> "10^${operand.format()}"
@@ -437,7 +439,9 @@ class CalculatorImpl(
             val outcome = engine.applyBinary(binaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
                 if (a != null && b != null) {
-                    lastX = b
+                    if (b.signum() != 0) {
+                        lastX = b
+                    }
                     val formula = when (operation) {
                         LOG -> "log_${b.format()}(${a.format()})"
                         XTH_ROOT -> "${b.format()}√(${a.format()})"

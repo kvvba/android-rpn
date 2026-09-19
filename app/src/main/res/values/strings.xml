@@ -3,6 +3,57 @@
     <string name="app_launcher_name">Calculator</string>
     <string name="scientific_calculator">Scientific Calculator</string>
     <string name="unit_converter">Unit converter</string>
+    <string name="formulae">Formulae</string>
+    <string name="formula_fill_all_but_one">Fill in all fields except the one you want to calculate</string>
+    <string name="formula_invalid_number">%1$s is not a valid number</string>
+    <string name="formula_calculate">Calculate</string>
+    <string name="formula_clear">Clear</string>
+    <string name="formula_section_scientific">Scientific</string>
+    <string name="formula_section_finance">Finance</string>
+    <string name="formula_section_utility">Utility</string>
+
+    <string name="formula_reynolds_number">Reynolds number</string>
+    <string name="formula_reynolds_number_expression">Re = ρ·v·L / μ</string>
+    <string name="formula_var_reynolds_number">Reynolds number</string>
+    <string name="formula_var_density">Density</string>
+    <string name="formula_var_velocity">Velocity</string>
+    <string name="formula_var_characteristic_length">Characteristic length</string>
+    <string name="formula_var_dynamic_viscosity">Dynamic viscosity</string>
+
+    <string name="formula_prandtl_number">Prandtl number</string>
+    <string name="formula_prandtl_number_expression">Pr = cp·μ / k</string>
+    <string name="formula_var_prandtl_number">Prandtl number</string>
+    <string name="formula_var_specific_heat">Specific heat capacity</string>
+    <string name="formula_var_thermal_conductivity">Thermal conductivity</string>
+
+    <string name="formula_compound_interest">Compound interest</string>
+    <string name="formula_compound_interest_expression">A = P(1 + r/n)^(nt)</string>
+    <string name="formula_var_final_amount">Final amount</string>
+    <string name="formula_var_principal">Principal</string>
+    <string name="formula_var_annual_rate">Annual interest rate</string>
+    <string name="formula_var_compounds_per_year">Compounds per year</string>
+    <string name="formula_var_years">Years</string>
+
+    <string name="formula_income_tax">Income tax (flat rate)</string>
+    <string name="formula_income_tax_expression">Tax = Income × Rate / 100</string>
+    <string name="formula_var_tax">Tax</string>
+    <string name="formula_var_income">Income</string>
+    <string name="formula_var_tax_rate">Tax rate</string>
+
+    <string name="formula_tip_split">Tip &amp; bill split</string>
+    <string name="formula_tip_split_expression">PerPerson = Bill × (1 + Tip / 100) / People</string>
+    <string name="formula_var_bill">Bill amount</string>
+    <string name="formula_var_tip">Tip</string>
+    <string name="formula_var_people">Number of people</string>
+    <string name="formula_var_per_person">Amount per person</string>
+
+    <string name="formula_unit_meter_per_second">m/s</string>
+    <string name="formula_unit_meter">m</string>
+    <string name="formula_unit_pascal_second">Pa·s</string>
+    <string name="formula_unit_specific_heat">J/(kg·K)</string>
+    <string name="formula_unit_thermal_conductivity">W/(m·K)</string>
+    <string name="formula_unit_decimal_rate">decimal, e.g. 0.05 for 5%</string>
+    <string name="formula_unit_percent">%</string>
     <string name="swap_units">Swap units</string>
 
     <!-- Calculator field -->
