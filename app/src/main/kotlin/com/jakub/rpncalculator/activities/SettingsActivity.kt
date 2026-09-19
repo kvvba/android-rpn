@@ -12,10 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.compose.extensions.enableEdgeToEdgeSimple
 import org.fossify.commons.compose.theme.AppThemeSurface
-import org.fossify.commons.compose.theme.getAppIconIds
-import org.fossify.commons.compose.theme.getAppLauncherName
-import org.fossify.commons.helpers.APP_ICON_IDS
-import org.fossify.commons.helpers.APP_LAUNCHER_NAME
 import org.fossify.commons.helpers.IS_CUSTOMIZING_COLORS
 import org.fossify.commons.helpers.isTiramisuPlus
 import com.jakub.rpncalculator.compose.SettingsScreen
@@ -73,11 +69,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun startCustomizationActivity() {
-        Intent(applicationContext, CustomizationActivity::class.java).apply {
-            putExtra(APP_ICON_IDS, getAppIconIds())
-            putExtra(APP_LAUNCHER_NAME, getAppLauncherName())
-            startActivity(this)
-        }
+        startActivity(Intent(applicationContext, CustomizationActivity::class.java))
     }
 
     private fun setupCustomizeWidgetColors() {

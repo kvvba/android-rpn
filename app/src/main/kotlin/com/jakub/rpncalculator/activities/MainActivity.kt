@@ -18,7 +18,6 @@ import org.fossify.commons.extensions.performHapticFeedback
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.value
 import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.APP_ICON_IDS
 import org.fossify.commons.helpers.LOWER_ALPHA_INT
 import org.fossify.commons.helpers.MAX_ALPHA_INT
 import org.fossify.commons.helpers.MEDIUM_ALPHA_INT
@@ -338,11 +337,7 @@ class MainActivity : SimpleActivity(), Calculator {
 
     private fun launchSettings() {
         hideKeyboard()
-        startActivity(
-            Intent(applicationContext, SettingsActivity::class.java).apply {
-                putIntegerArrayListExtra(APP_ICON_IDS, getAppIconIDs())
-            }
-        )
+        startActivity(Intent(applicationContext, SettingsActivity::class.java))
     }
 
     private fun launchAbout() {
