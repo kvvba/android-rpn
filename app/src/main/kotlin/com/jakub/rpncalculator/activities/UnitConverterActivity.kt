@@ -2,6 +2,7 @@ package com.jakub.rpncalculator.activities
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.res.ResourcesCompat
@@ -9,6 +10,7 @@ import androidx.core.view.isVisible
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.performHapticFeedback
+import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.LOWER_ALPHA_INT
 import org.fossify.commons.helpers.MEDIUM_ALPHA_INT
@@ -18,7 +20,9 @@ import com.jakub.rpncalculator.databinding.ActivityUnitConverterBinding
 import com.jakub.rpncalculator.extensions.config
 import com.jakub.rpncalculator.extensions.updateViewColors
 import com.jakub.rpncalculator.helpers.CONVERTER_STATE
+import com.jakub.rpncalculator.helpers.CurrencyRatesStore
 import com.jakub.rpncalculator.helpers.converters.Converter
+import com.jakub.rpncalculator.helpers.converters.CurrencyConverter
 import com.jakub.rpncalculator.helpers.converters.TemperatureConverter
 import com.jakub.rpncalculator.helpers.getDecimalSeparator
 import com.jakub.rpncalculator.views.ConverterView
@@ -79,6 +83,15 @@ class UnitConverterActivity : SimpleActivity(), ConverterView.OnUnitChangedListe
         binding.viewUnitConverter.viewConverter.root.setOnUnitChangedListener(this)
         binding.viewUnitConverter.viewConverter.root.setConverter(converter)
         binding.unitConverterToolbar.setTitle(converter.nameResId)
+
+        if (converter.key == CurrencyConverter.key) {
+            CurrencyRatesStore.ensureLoaded(this)
+            binding.viewUnitConverter.currencyRefreshLayout.visibility = View.VISIBLE
+            updateRatesUpdatedLabel()
+            binding.viewUnitConverter.currencyRefreshButton.setOnClickListener {
+                refreshCurrencyRates()
+            }
+        }
 
         if (savedInstanceState != null) {
             savedInstanceState.getBundle(CONVERTER_STATE)?.also {
@@ -197,6 +210,32 @@ class UnitConverterActivity : SimpleActivity(), ConverterView.OnUnitChangedListe
         with(binding.viewUnitConverter) {
             btnPlusMinus.background = pillDrawable
             btnPlusMinus.background?.alpha = MEDIUM_ALPHA_INT
+        }
+    }
+
+    private fun updateRatesUpdatedLabel() {
+        val updatedAt = CurrencyRatesStore.lastUpdatedMillis()
+        binding.viewUnitConverter.currencyLastUpdated.text = if (updatedAt == 0L) {
+            getString(R.string.rates_never_updated)
+        } else {
+            val relativeTime = DateUtils.getRelativeTimeSpanString(
+                updatedAt, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS
+            )
+            getString(R.string.rates_updated_format, relativeTime)
+        }
+    }
+
+    private fun refreshCurrencyRates() {
+        binding.viewUnitConverter.currencyRefreshButton.isEnabled = false
+        CurrencyRatesStore.refresh { success ->
+            binding.viewUnitConverter.currencyRefreshButton.isEnabled = true
+            updateRatesUpdatedLabel()
+            if (success) {
+                binding.viewUnitConverter.viewConverter.root.recalculate()
+                toast(R.string.rates_refresh_succeeded)
+            } else {
+                toast(R.string.rates_refresh_failed)
+            }
         }
     }
 }

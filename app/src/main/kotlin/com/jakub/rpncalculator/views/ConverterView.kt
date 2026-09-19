@@ -265,6 +265,9 @@ class ConverterView @JvmOverloads constructor(
         binding.bottomUnitSymbol.requestLayout()
     }
 
+    /** Recomputes the bottom value from the current top value, e.g. after live rates change. */
+    fun recalculate() = updateBottomValue()
+
     private fun updateBottomValue() {
         converter?.apply {
             val rawText = binding.topUnitText.text.toString()

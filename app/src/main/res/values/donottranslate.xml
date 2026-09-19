@@ -95,6 +95,32 @@
     <string name="unit_speed_mach_symbol">Ma</string>
     <string name="unit_speed_speed_of_light_symbol">c</string>
 
+    <string name="currency_usd_symbol">USD</string>
+    <string name="currency_eur_symbol">€</string>
+    <string name="currency_gbp_symbol">£</string>
+    <string name="currency_jpy_symbol">¥</string>
+    <string name="currency_chf_symbol">CHF</string>
+    <string name="currency_cad_symbol">CA$</string>
+    <string name="currency_aud_symbol">A$</string>
+    <string name="currency_cny_symbol">¥</string>
+    <string name="currency_pln_symbol">zł</string>
+    <string name="currency_huf_symbol">Ft</string>
+    <string name="currency_sek_symbol">kr</string>
+    <string name="currency_nok_symbol">kr</string>
+    <string name="currency_dkk_symbol">kr</string>
+    <string name="currency_czk_symbol">Kč</string>
+    <string name="currency_inr_symbol">₹</string>
+    <string name="currency_brl_symbol">R$</string>
+    <string name="currency_mxn_symbol">MX$</string>
+    <string name="currency_zar_symbol">R</string>
+    <string name="currency_nzd_symbol">NZ$</string>
+    <string name="currency_sgd_symbol">S$</string>
+    <string name="currency_krw_symbol">₩</string>
+    <string name="currency_try_symbol">₺</string>
+    <string name="currency_hkd_symbol">HK$</string>
+    <string name="currency_ils_symbol">₪</string>
+    <string name="currency_aed_symbol">AED</string>
+
     <string name="unit_pressure_pascal_symbol">Pa</string>
     <string name="unit_pressure_kilopascal_symbol">kPa</string>
     <string name="unit_pressure_hectopascal_symbol">hPa</string>

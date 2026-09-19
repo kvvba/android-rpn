@@ -8,6 +8,7 @@ import java.math.BigDecimal
 interface Converter {
     companion object {
         val ALL = listOf(
+            CurrencyConverter,
             LengthConverter,
             AreaConverter,
             VolumeConverter,
