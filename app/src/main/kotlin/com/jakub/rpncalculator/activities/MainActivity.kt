@@ -279,11 +279,13 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     private fun launchAbout() {
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(org.fossify.commons.R.string.about)
             .setMessage(R.string.about_fork_notice)
             .setPositiveButton(android.R.string.ok, null)
-            .show()
+            .create()
+        dialog.show()
+        dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
     }
 
     private fun getButtonIds() = calcBinding.run {
