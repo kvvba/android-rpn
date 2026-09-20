@@ -411,15 +411,22 @@ class MainActivity : SimpleActivity(), Calculator {
 
     private fun showStackPicker() {
         // Shown bottom-up like a physical RPN stack display, with X on the last line.
-        val registers = calc.stackSnapshot().asReversed()
-        val lines = if (registers.isEmpty()) {
-            arrayOf(getString(R.string.stack_empty))
+        var registers = calc.stackSnapshot().asReversed()
+        fun linesFor(regs: List<Pair<String, String>>) = if (regs.isEmpty()) {
+            listOf(getString(R.string.stack_empty))
         } else {
-            registers.map { (label, value) -> "$label: $value" }.toTypedArray()
+            regs.map { (label, value) -> "$label: $value" }
+        }
+        val textColor = getProperTextColor()
+        val adapter = object : ArrayAdapter<String>(
+            this, android.R.layout.simple_list_item_1, linesFor(registers).toMutableList()
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View =
+                (super.getView(position, convertView, parent) as TextView).apply { setTextColor(textColor) }
         }
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.stack_picker_title)
-            .setItems(lines, null)
+            .setAdapter(adapter, null)
             .setPositiveButton(android.R.string.ok, null)
             .create()
         dialog.show()
@@ -429,7 +436,12 @@ class MainActivity : SimpleActivity(), Calculator {
                 // registers is bottom-up (X last); handleEditRegister/replaceAt count down from
                 // X (0 = X, 1 = Y, ...), i.e. top-down, so the index needs flipping back.
                 val registerPosition = registers.size - 1 - displayPosition
-                showRegisterOptions(registers[displayPosition].second, registerPosition) { dialog.dismiss() }
+                showRegisterOptions(registers[displayPosition].second, registerPosition) {
+                    // Refresh in place rather than closing, so further edits can be chained.
+                    registers = calc.stackSnapshot().asReversed()
+                    adapter.clear()
+                    adapter.addAll(linesFor(registers))
+                }
                 true
             }
         }
