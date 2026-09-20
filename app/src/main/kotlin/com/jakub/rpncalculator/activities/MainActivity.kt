@@ -211,9 +211,12 @@ class MainActivity : SimpleActivity(), Calculator {
             updateDisplayModeIndicator()
         }
 
-        calcBinding.formula.setOnLongClickListener { copyToClipboard(false) }
+        calcBinding.formula.setOnLongClickListener {
+            showCopyPasteOptions(calcBinding.result.value.orEmpty()) {}
+            true
+        }
         calcBinding.result.setOnLongClickListener {
-            showRegisterOptions(calcBinding.result.value.orEmpty(), 0) {}
+            showCopyPasteOptions(calcBinding.result.value.orEmpty()) {}
             true
         }
         AutofitHelper.create(calcBinding.result)
@@ -421,10 +424,11 @@ class MainActivity : SimpleActivity(), Calculator {
         dialog.show()
         dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
         if (registers.isNotEmpty()) {
-            val xValue = registers.last().second
-            dialog.listView.setOnItemLongClickListener { _, _, _, _ ->
-                // Holding any row acts on X only, regardless of which register was held.
-                showCopyPasteOptions(xValue) { dialog.dismiss() }
+            dialog.listView.setOnItemLongClickListener { _, _, displayPosition, _ ->
+                // registers is bottom-up (X last); handleEditRegister/replaceAt count down from
+                // X (0 = X, 1 = Y, ...), i.e. top-down, so the index needs flipping back.
+                val registerPosition = registers.size - 1 - displayPosition
+                showRegisterOptions(registers[displayPosition].second, registerPosition) { dialog.dismiss() }
                 true
             }
         }
@@ -547,11 +551,32 @@ class MainActivity : SimpleActivity(), Calculator {
         }
 
         val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.constants_picker_title)
             .setAdapter(adapter) { _, position -> rows[position].second?.let { calc.handleConstant(it.value) } }
             .create()
+
+        val titleRow = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.HORIZONTAL
+            val padding = resources.getDimensionPixelSize(org.fossify.commons.R.dimen.normal_margin)
+            setPadding(padding, padding, padding, padding)
+            gravity = android.view.Gravity.CENTER_VERTICAL
+        }
+        val titleText = TextView(this).apply {
+            text = getString(R.string.constants_picker_title)
+            setTextColor(textColor)
+            textSize = 18f
+            layoutParams = android.widget.LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        val closeButton = android.widget.ImageButton(this).apply {
+            setImageResource(org.fossify.commons.R.drawable.ic_cross_vector)
+            setColorFilter(textColor)
+            background = null
+            setOnClickListener { dialog.dismiss() }
+        }
+        titleRow.addView(titleText)
+        titleRow.addView(closeButton)
+        dialog.setCustomTitle(titleRow)
+
         dialog.show()
-        dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
     }
 
     private fun launchAbout() {
@@ -581,20 +606,6 @@ class MainActivity : SimpleActivity(), Calculator {
 
     private fun getButtonIds() = calcBinding.run {
         arrayOf(btnDecimal, btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9)
-    }
-
-    private fun copyToClipboard(copyResult: Boolean): Boolean {
-        var value = calcBinding.formula.value
-        if (copyResult) {
-            value = calcBinding.result.value
-        }
-
-        return if (value.isNullOrEmpty()) {
-            false
-        } else {
-            copyToClipboard(NumberFormatHelper().removeThousandsSeparator(value))
-            true
-        }
     }
 
     override fun showNewResult(value: String, context: Context) {
