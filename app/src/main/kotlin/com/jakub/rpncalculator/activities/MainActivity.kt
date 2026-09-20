@@ -62,6 +62,7 @@ import com.jakub.rpncalculator.helpers.MULTIPLY
 import com.jakub.rpncalculator.helpers.NCR
 import com.jakub.rpncalculator.helpers.NPR
 import com.jakub.rpncalculator.helpers.NumberFormatHelper
+import java.math.BigDecimal
 import com.jakub.rpncalculator.helpers.PERCENT
 import com.jakub.rpncalculator.helpers.PERCENT_CHANGE
 import com.jakub.rpncalculator.helpers.PLUS
@@ -464,7 +465,7 @@ class MainActivity : SimpleActivity(), Calculator {
                 when (which) {
                     0 -> copyToClipboard(NumberFormatHelper().removeThousandsSeparator(value))
                     1 -> {
-                        pasteIntoX()
+                        pasteIntoRegister(position)
                         onHandled()
                     }
                     else -> showEditRegisterDialog(value, position, onHandled)
@@ -500,6 +501,23 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     private fun pasteIntoX() {
+        val value = clipboardNumber() ?: run {
+            toast(R.string.invalid_number)
+            return
+        }
+        calc.handleConstant(value)
+    }
+
+    /** Replaces the register at [position] (0 = X) with the clipboard's value, like edit + paste. */
+    private fun pasteIntoRegister(position: Int) {
+        val value = clipboardNumber() ?: run {
+            toast(R.string.invalid_number)
+            return
+        }
+        calc.handleEditRegister(position, value)
+    }
+
+    private fun clipboardNumber(): BigDecimal? {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = clipboard.primaryClip
         val text = if (clip != null && clip.itemCount > 0) {
@@ -507,12 +525,7 @@ class MainActivity : SimpleActivity(), Calculator {
         } else {
             null
         }
-        val value = text?.let { NumberFormatHelper().removeGroupingSeparator(it) }?.toBigDecimalOrNull()
-        if (value != null) {
-            calc.handleConstant(value)
-        } else {
-            toast(R.string.invalid_number)
-        }
+        return text?.let { NumberFormatHelper().removeGroupingSeparator(it) }?.toBigDecimalOrNull()
     }
 
     private fun showConstantsPicker() {
