@@ -95,7 +95,7 @@
     <string name="unit_speed_mach_symbol">Ma</string>
     <string name="unit_speed_speed_of_light_symbol">c</string>
 
-    <string name="currency_usd_symbol">USD</string>
+    <string name="currency_usd_symbol">US$</string>
     <string name="currency_eur_symbol">€</string>
     <string name="currency_gbp_symbol">£</string>
     <string name="currency_jpy_symbol">¥</string>

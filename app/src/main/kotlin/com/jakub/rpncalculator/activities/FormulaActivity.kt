@@ -5,6 +5,7 @@ import android.text.InputFilter
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
@@ -35,6 +36,7 @@ class FormulaActivity : SimpleActivity() {
     private lateinit var formula: Formula
     private lateinit var variablesBySymbol: Map<String, com.jakub.rpncalculator.helpers.formulas.FormulaVariable>
     private val inputsBySymbol = LinkedHashMap<String, EditText>()
+    private val labelsBySymbol = LinkedHashMap<String, TextView>()
     private val formatter = NumberFormatHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,12 +85,16 @@ class FormulaActivity : SimpleActivity() {
                     }
             }
             binding.formulaModeSpinner.setSelection(prefs.getInt(modeKey(), 0))
+            binding.formulaModeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    updateLabelsAndExplanation(position)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
         }
         formula.variables.forEach { variable ->
             val row = ItemFormulaVariableBinding.inflate(layoutInflater, binding.formulaVariablesContainer, true)
-            val unitSuffix = variable.unitResId?.let { " [${getString(it)}]" }.orEmpty()
-            val symbolSuffix = if (formula.showExpression) " (${variable.symbol})" else ""
-            row.formulaVariableLabel.text = "${getString(variable.nameResId)}$symbolSuffix$unitSuffix"
             row.formulaVariableInput.setText(prefs.getString(prefsKey(variable.symbol), ""))
             if (variable.isCurrency) {
                 row.formulaVariableInput.filters = arrayOf(twoDecimalInputFilter)
@@ -101,10 +107,30 @@ class FormulaActivity : SimpleActivity() {
                 showKeyboard(row.formulaVariableInput)
             }
             inputsBySymbol[variable.symbol] = row.formulaVariableInput
+            labelsBySymbol[variable.symbol] = row.formulaVariableLabel
         }
+
+        val initialModeIndex = if (formula.modeOptions.isNotEmpty()) binding.formulaModeSpinner.selectedItemPosition else 0
+        updateLabelsAndExplanation(initialModeIndex)
 
         binding.formulaCalculateButton.setOnClickListener { calculate() }
         binding.formulaClearButton.setOnClickListener { clearFields() }
+    }
+
+    private fun updateLabelsAndExplanation(modeIndex: Int) {
+        val currencySymbol = formula.currencySymbolResId(modeIndex)?.let { getString(it) }
+        formula.variables.forEach { variable ->
+            val unitSuffix = variable.unitResId?.let { " [${getString(it)}]" }.orEmpty()
+            val symbolSuffix = if (formula.showExpression) " (${variable.symbol})" else ""
+            val currencySuffix = if (variable.isCurrency && currencySymbol != null) " ($currencySymbol)" else ""
+            labelsBySymbol.getValue(variable.symbol).text =
+                "${getString(variable.nameResId)}$symbolSuffix$currencySuffix$unitSuffix"
+        }
+
+        val explanation = formula.explanation(modeIndex)
+        binding.formulaExplanation.text = explanation.orEmpty()
+        binding.formulaExplanation.visibility = if (explanation != null) View.VISIBLE else View.GONE
+        binding.formulaExplanation.setTextColor(getProperTextColor())
     }
 
     override fun onResume() {
@@ -155,6 +181,7 @@ class FormulaActivity : SimpleActivity() {
     private fun updateViewColorsRecursively() {
         val textColor = getProperTextColor()
         binding.formulaExpression.setTextColor(textColor)
+        binding.formulaExplanation.setTextColor(textColor)
         val container = binding.formulaVariablesContainer
         for (i in 0 until container.childCount) {
             val row = container.getChildAt(i) as android.view.ViewGroup

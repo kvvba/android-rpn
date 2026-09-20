@@ -9,19 +9,16 @@ entry model instead of infix expressions.
   <img src="screenshots/tools.png" width="30%" alt="Unit conversions and calculators" />
 </p>
 
+## Note on permissions
+The application will ask for the networking permission. Networking is needed only for updating currency exchange rates, and rates will never be refreshed without explicit user input. Updated rates are stored persistently for offline use. Disabling the networking permission will not impede any other function of the application.
+
 ## Features
 
-- **RPN entry** with a visible stack, undo, last-X recall, and register storage (STO/RCL).
-- **Scientific functions**: trig, logs, powers, roots, factorial, combinations/permutations,
-  constants, DEG/RAD/GRAD and engineering-notation display modes.
-- **Unit conversions** across length, area, volume, mass, temperature, time, speed, pressure,
-  energy, power, fuel, data size, density, flow rate, cooking, torque, and lighting.
-- **Currency conversion** across 25 major currencies, with a manual "Refresh rates" button
-  (never fetches automatically) and rates cached for offline use.
-- **Formula calculators**: Reynolds number, Prandtl number, hydraulic diameter, compound
-  interest, and a per-country progressive income tax / take-home pay calculator (UK, US,
-  Poland, Hungary, Germany, France).
-- **History** of past calculations, and persistent per-converter unit choices.
+- RPN (postfix) entry mode
+- Scientific functions
+- Useful constants
+- Conversions for common units and currency
+- Formulae for common calculations
 
 ## Installing
 

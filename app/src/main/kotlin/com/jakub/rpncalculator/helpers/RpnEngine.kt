@@ -116,6 +116,24 @@ class RpnEngine {
         }
     }
 
+    /** Applies [compute] to (Y, X) but leaves Y on the stack, replacing only X with the result. */
+    fun applyKeepingY(compute: (BigDecimal, BigDecimal) -> BigDecimal): OpOutcome {
+        if (stack.size < 2) {
+            return OpOutcome.Error(RpnError.INSUFFICIENT_STACK)
+        }
+
+        val x = stack.removeLast()
+        val y = stack.last()
+        return try {
+            val result = compute(y, x)
+            stack.addLast(result)
+            OpOutcome.Success(result)
+        } catch (_: Exception) {
+            stack.addLast(x)
+            OpOutcome.Error(RpnError.INVALID_OPERATION)
+        }
+    }
+
     fun applyUnary(compute: (BigDecimal) -> BigDecimal): OpOutcome {
         if (stack.isEmpty()) {
             return OpOutcome.Error(RpnError.INSUFFICIENT_STACK)
@@ -202,7 +220,9 @@ class RpnEngine {
         fun log10(a: BigDecimal): BigDecimal =
             evaluateExpression("LOG10(${a.toPlainString()})").round(TRANSCENDENTAL_CONTEXT)
 
-        fun percent(a: BigDecimal): BigDecimal = a.divide(BigDecimal(100), MATH_CONTEXT)
+        /** [x] percent of [y]: y * x / 100. */
+        fun percent(y: BigDecimal, x: BigDecimal): BigDecimal =
+            y.multiply(x, MATH_CONTEXT).divide(BigDecimal(100), MATH_CONTEXT)
 
         /** Percentage change of [x] from [y]: 100 * (x - y) / y. */
         fun percentChange(y: BigDecimal, x: BigDecimal): BigDecimal =

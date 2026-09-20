@@ -399,6 +399,10 @@ class CalculatorImpl(
 
     fun handleReset() {
         pushHistory()
+        val currentX = if (entryActive) entry.removeGroupSeparator().toBigDecimalOrNull() else engine.peek()
+        if (currentX != null && currentX.signum() != 0) {
+            lastX = currentX
+        }
         engine.clear()
         entry = "0"
         entryActive = false
@@ -415,7 +419,20 @@ class CalculatorImpl(
         pushHistory()
         ensureEntryPushed()
 
-        if (isUnary(operation)) {
+        if (operation == PERCENT) {
+            val snapshot = engine.snapshot()
+            val a = snapshot.getOrNull(snapshot.size - 2)
+            val b = snapshot.getOrNull(snapshot.size - 1)
+            val outcome = engine.applyKeepingY(RpnEngine.Companion::percent)
+            handleOutcome(operation, outcome) { result ->
+                if (a != null && b != null) {
+                    if (b.signum() != 0) {
+                        lastX = b
+                    }
+                    recordHistory("${a.format()} ${symbolFor(operation)} ${b.format()}", result.format())
+                }
+            }
+        } else if (isUnary(operation)) {
             val operand = engine.peek()
             val outcome = engine.applyUnary(unaryFunction(operation))
             handleOutcome(operation, outcome) { result ->
@@ -459,7 +476,7 @@ class CalculatorImpl(
         }
     }
 
-    private fun isUnary(operation: String) = operation == ROOT || operation == PERCENT ||
+    private fun isUnary(operation: String) = operation == ROOT ||
         operation == SQUARE || operation == INVERSE || operation == EXP || operation == POWER10 ||
         operation == FACTORIAL || isNamedFunction(operation)
 
@@ -485,8 +502,7 @@ class CalculatorImpl(
         EXP -> RpnEngine.Companion::exp
         LOG10 -> RpnEngine.Companion::log10
         POWER10 -> { a -> RpnEngine.power(BigDecimal.TEN, a) }
-        FACTORIAL -> RpnEngine.Companion::factorial
-        else -> RpnEngine.Companion::percent
+        else -> RpnEngine.Companion::factorial
     }
 
     private fun binaryFunction(operation: String): (BigDecimal, BigDecimal) -> BigDecimal =
@@ -502,6 +518,7 @@ class CalculatorImpl(
             NCR -> RpnEngine.Companion::nCr
             XTH_ROOT -> RpnEngine.Companion::xthRoot
             PERCENT_CHANGE -> RpnEngine.Companion::percentChange
+            PERCENT -> RpnEngine.Companion::percent
             else -> RpnEngine.Companion::power
         }
 

@@ -3,10 +3,15 @@ package com.jakub.rpncalculator.activities
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.InputType
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -65,6 +70,8 @@ import com.jakub.rpncalculator.helpers.POWER10
 import com.jakub.rpncalculator.helpers.QUOTIENT
 import com.jakub.rpncalculator.helpers.ROOT
 import com.jakub.rpncalculator.helpers.RpnEngine
+import com.jakub.rpncalculator.helpers.ConstantSection
+import com.jakub.rpncalculator.helpers.NamedConstant
 import com.jakub.rpncalculator.helpers.SCIENTIFIC_CONSTANTS
 import com.jakub.rpncalculator.helpers.SIN
 import com.jakub.rpncalculator.helpers.SINH
@@ -351,6 +358,7 @@ class MainActivity : SimpleActivity(), Calculator {
                 R.id.more_apps_from_us -> launchMoreAppsFromUsIntent()
                 R.id.unit_converter -> launchUnitConverter()
                 R.id.settings -> launchSettings()
+                R.id.help -> launchHelp()
                 R.id.about -> launchAbout()
                 else -> return@setOnMenuItemClickListener false
             }
@@ -413,14 +421,32 @@ class MainActivity : SimpleActivity(), Calculator {
         dialog.show()
         dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
         if (registers.isNotEmpty()) {
-            dialog.listView.setOnItemLongClickListener { _, _, displayPosition, _ ->
-                // registers is bottom-up (X last); handleEditRegister/replaceAt count down from
-                // X (0 = X, 1 = Y, ...), i.e. top-down, so the index needs flipping back.
-                val registerPosition = registers.size - 1 - displayPosition
-                showRegisterOptions(registers[displayPosition].second, registerPosition) { dialog.dismiss() }
+            val xValue = registers.last().second
+            dialog.listView.setOnItemLongClickListener { _, _, _, _ ->
+                // Holding any row acts on X only, regardless of which register was held.
+                showCopyPasteOptions(xValue) { dialog.dismiss() }
                 true
             }
         }
+    }
+
+    private fun showCopyPasteOptions(value: String, onHandled: () -> Unit) {
+        val options = arrayOf(
+            getString(org.fossify.commons.R.string.copy),
+            getString(R.string.paste)
+        )
+        AlertDialog.Builder(this)
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> copyToClipboard(NumberFormatHelper().removeThousandsSeparator(value))
+                    else -> {
+                        pasteIntoX()
+                        onHandled()
+                    }
+                }
+            }
+            .create()
+            .show()
     }
 
     private fun showRegisterOptions(value: String, position: Int, onHandled: () -> Unit) {
@@ -486,10 +512,43 @@ class MainActivity : SimpleActivity(), Calculator {
     }
 
     private fun showConstantsPicker() {
-        val labels = SCIENTIFIC_CONSTANTS.map { it.label }.toTypedArray()
+        val rows = mutableListOf<Pair<ConstantSection?, NamedConstant?>>()
+        var lastSection: ConstantSection? = null
+        for (constant in SCIENTIFIC_CONSTANTS) {
+            if (constant.section != lastSection) {
+                rows.add(constant.section to null)
+                lastSection = constant.section
+            }
+            rows.add(null to constant)
+        }
+
+        val textColor = getProperTextColor()
+        val adapter = object : ArrayAdapter<Pair<ConstantSection?, NamedConstant?>>(
+            this, android.R.layout.simple_list_item_1, rows
+        ) {
+            override fun areAllItemsEnabled() = false
+            override fun isEnabled(position: Int) = rows[position].second != null
+
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                val (section, constant) = rows[position]
+                view.setTextColor(textColor)
+                if (section != null) {
+                    view.text = section.label
+                    view.setTypeface(null, Typeface.BOLD)
+                    view.alpha = 0.6f
+                } else {
+                    view.text = constant!!.label
+                    view.setTypeface(null, Typeface.NORMAL)
+                    view.alpha = 1f
+                }
+                return view
+            }
+        }
+
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.constants_picker_title)
-            .setItems(labels) { _, which -> calc.handleConstant(SCIENTIFIC_CONSTANTS[which].value) }
+            .setAdapter(adapter) { _, position -> rows[position].second?.let { calc.handleConstant(it.value) } }
             .create()
         dialog.show()
         dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
@@ -503,6 +562,21 @@ class MainActivity : SimpleActivity(), Calculator {
             .create()
         dialog.show()
         dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
+        dialog.findViewById<TextView>(android.R.id.message)?.apply {
+            autoLinkMask = Linkify.WEB_URLS
+            movementMethod = LinkMovementMethod.getInstance()
+        }
+    }
+
+    private fun launchHelp() {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.help)
+            .setMessage(R.string.help_content)
+            .setPositiveButton(android.R.string.ok, null)
+            .create()
+        dialog.show()
+        dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.setTextColor(getProperTextColor())
+        dialog.findViewById<TextView>(android.R.id.message)?.setTextColor(getProperTextColor())
     }
 
     private fun getButtonIds() = calcBinding.run {

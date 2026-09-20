@@ -54,31 +54,22 @@ object CountryIncomeTaxFormula : Formula {
         return tax
     }
 
-    private fun usTax(income: BigDecimal) = bracketTax(
-        income, listOf(
-            "0" to "0.10", "11000" to "0.12", "44725" to "0.22", "95375" to "0.24",
-            "182100" to "0.32", "231250" to "0.35", "578125" to "0.37"
-        )
+    private val ukBrackets = listOf("0" to "0.0", "12570" to "0.20", "50270" to "0.40", "125140" to "0.45")
+    private val usBrackets = listOf(
+        "0" to "0.10", "11000" to "0.12", "44725" to "0.22", "95375" to "0.24",
+        "182100" to "0.32", "231250" to "0.35", "578125" to "0.37"
+    )
+    private val polandBrackets = listOf("0" to "0.0", "30000" to "0.12", "120000" to "0.32")
+    private val hungaryBrackets = listOf("0" to "0.15")
+    private val franceBrackets = listOf(
+        "0" to "0.0", "11294" to "0.11", "28797" to "0.30", "82341" to "0.41", "177106" to "0.45"
     )
 
-    private fun ukTax(income: BigDecimal) = bracketTax(
-        income, listOf(
-            "0" to "0.0", "12570" to "0.20", "50270" to "0.40", "125140" to "0.45"
-        )
-    )
-
-    private fun polandTax(income: BigDecimal) = bracketTax(
-        income, listOf("0" to "0.0", "30000" to "0.12", "120000" to "0.32")
-    )
-
-    private fun hungaryTax(income: BigDecimal) = bracketTax(income, listOf("0" to "0.15"))
-
-    private fun franceTax(income: BigDecimal) = bracketTax(
-        income, listOf(
-            "0" to "0.0", "11294" to "0.11", "28797" to "0.30",
-            "82341" to "0.41", "177106" to "0.45"
-        )
-    )
+    private fun usTax(income: BigDecimal) = bracketTax(income, usBrackets)
+    private fun ukTax(income: BigDecimal) = bracketTax(income, ukBrackets)
+    private fun polandTax(income: BigDecimal) = bracketTax(income, polandBrackets)
+    private fun hungaryTax(income: BigDecimal) = bracketTax(income, hungaryBrackets)
+    private fun franceTax(income: BigDecimal) = bracketTax(income, franceBrackets)
 
     /** Approximates Germany's quadratic progressive zone as a linear ramp of the marginal rate. */
     private fun germanyTax(income: BigDecimal): BigDecimal {
@@ -132,6 +123,37 @@ object CountryIncomeTaxFormula : Formula {
             if (valueForIncome(mid) < target) low = mid else high = mid
         }
         return low.add(high, MATH_CONTEXT).divide(BigDecimal(2), MATH_CONTEXT)
+    }
+
+    private val currencySymbolResIds = listOf(
+        R.string.currency_gbp_symbol, R.string.currency_usd_symbol, R.string.currency_pln_symbol,
+        R.string.currency_huf_symbol, R.string.currency_eur_symbol, R.string.currency_eur_symbol
+    )
+
+    override fun currencySymbolResId(modeIndex: Int): Int? = currencySymbolResIds.getOrNull(modeIndex)
+
+    /** One "up to X: rate%" line per band, the last band shown as "over X". */
+    private fun bandLines(brackets: List<Pair<String, String>>): String =
+        brackets.mapIndexed { i, (start, rate) ->
+            val ratePercent = BigDecimal(rate).multiply(BigDecimal(100)).stripTrailingZeros().toPlainString()
+            val next = brackets.getOrNull(i + 1)?.first
+            val startFormatted = BigDecimal(start).toBigInteger().toString()
+            when {
+                next == null -> "Over $startFormatted: $ratePercent%"
+                start == "0" -> "Up to ${BigDecimal(next).toBigInteger()}: $ratePercent%"
+                else -> "$startFormatted–${BigDecimal(next).toBigInteger()}: $ratePercent%"
+            }
+        }.joinToString("\n")
+
+    override fun explanation(modeIndex: Int): String = when (modeIndex) {
+        0 -> "UK tax bands (2024/25):\n${bandLines(ukBrackets)}"
+        1 -> "US federal brackets, single filer (2024):\n${bandLines(usBrackets)}"
+        2 -> "Poland PIT scale:\n${bandLines(polandBrackets)}"
+        3 -> "Hungary: flat rate\n${bandLines(hungaryBrackets)}"
+        4 -> "Germany: approximated as a linear ramp of the marginal rate\n" +
+            "Up to 11604: 0%\n11604–66760: 14% ramping to 42%\n66760–277825: 42%\nOver 277825: 45%"
+        5 -> "France income tax bands:\n${bandLines(franceBrackets)}"
+        else -> "Unknown country"
     }
 
     override fun solve(known: Map<String, BigDecimal>, solveFor: String, modeIndex: Int): BigDecimal =

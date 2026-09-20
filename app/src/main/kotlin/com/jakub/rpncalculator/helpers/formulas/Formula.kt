@@ -51,6 +51,12 @@ interface Formula {
     /** True if the user fills exactly one field and every other one is derived from it. */
     val solveFromSingleField: Boolean get() = false
 
+    /** Currency symbol string res for [isCurrency] fields, if it depends on [modeIndex]. */
+    fun currencySymbolResId(modeIndex: Int): Int? = null
+
+    /** Human-readable breakdown of how [modeIndex] computes its result, shown below the buttons. */
+    fun explanation(modeIndex: Int): String? = null
+
     /**
      * Computes [solveFor] from [known], which holds every other variable's symbol mapped to its
      * value. [modeIndex] selects among [modeOptions] and is 0 when there is no dropdown. Throws

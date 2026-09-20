@@ -107,13 +107,14 @@ class RpnEngineTest {
     }
 
     @Test
-    fun `percent divides by one hundred`() {
+    fun `percent computes x percent of y`() {
+        engine.push(BigDecimal(200))
         engine.push(BigDecimal(50))
 
-        val outcome = engine.applyUnary(RpnEngine::percent)
+        val outcome = engine.applyBinary(RpnEngine::percent)
 
         assertTrue(outcome is OpOutcome.Success)
-        assertEquals(0, BigDecimal("0.5").compareTo((outcome as OpOutcome.Success).value))
+        assertEquals(0, BigDecimal("100").compareTo((outcome as OpOutcome.Success).value))
     }
 
     @Test
